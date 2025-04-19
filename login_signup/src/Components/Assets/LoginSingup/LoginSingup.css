@@ -1,17 +1,90 @@
-/* Dark Theme Stylish Form CSS */
+/* Green Theme - Only color changes */
+.container {
+    background: #0a1a0a; /* Dark green background */
+    border: 1px solid #1a3a1a;
+}
+
+.text {
+    color: #4CAF50; /* Green accent color */
+}
+
+.underline {
+    background: linear-gradient(90deg, #4CAF50, #2E7D32); /* Green gradient */
+}
+
+.input {
+    background: #1a2a1a; /* Dark green input background */
+    border: 1px solid #2a4a2a;
+}
+
+.input:hover {
+    background: #1a3a1a;
+    border-color: #3a5a3a;
+}
+
+.input:focus-within {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.input img {
+    filter: invert(0.7) sepia(1) hue-rotate(90deg) saturate(5); /* Make icons green */
+}
+
+.input input::placeholder {
+    color: #5a7a5a;
+}
+
+.forgot-password {
+    color: #5a7a5a;
+}
+
+.forgot-password span {
+    color: #66BB6A; /* Light green link */
+}
+
+.forgot-password span:hover {
+    color: #4CAF50;
+}
+
+.forgot-password span::after {
+    background: #66BB6A;
+}
+
+.submit {
+    background: linear-gradient(135deg, #2E7D32, #4CAF50); /* Green button */
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+
+.submit:hover {
+    background: linear-gradient(135deg, #1B5E20, #388E3C);
+    box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
+}
+
+.submit:active {
+    box-shadow: 0 2px 5px rgba(46, 125, 50, 0.3);
+}
+
+.gray {
+    background: linear-gradient(135deg, #1a2a1a, #1a3a1a);
+}
+
+.gray:hover {
+    background: linear-gradient(135deg, #1a3a1a, #2a4a2a);
+}
+
+/* Keep all other existing styles exactly the same below this line */
 .container {
     display: flex;
     flex-direction: column;
     margin: auto;
     margin-top: 150px;
     width: 500px;
-    background: #1a1a1a; /* Dark gray background */
     padding-bottom: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
-    border: 1px solid #333;
     font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
@@ -31,7 +104,6 @@
 }
 
 .text {
-    color: #9d7aff; /* Light purple for contrast */
     font-size: 38px;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -40,7 +112,6 @@
 .underline {
     width: 60px;
     height: 5px;
-    background: linear-gradient(90deg, #9d7aff, #6a00ff);
     border-radius: 10px;
 }
 
@@ -58,29 +129,8 @@
     margin: auto;
     width: 400px;
     height: 65px;
-    background: #2a2a2a; /* Dark input background */
     border-radius: 8px;
     transition: all 0.3s ease;
-    border: 1px solid #444;
-}
-
-.input:hover {
-    background: #333;
-    border-color: #555;
-}
-
-.input:focus-within {
-    border-color: #9d7aff;
-    box-shadow: 0 0 0 2px rgba(157, 122, 255, 0.2);
-}
-
-.input img {
-    width: 20px;
-    height: 20px;
-    margin: 0 20px;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
-    filter: invert(0.7); /* Make icons visible on dark bg */
 }
 
 .input:hover img {
@@ -97,28 +147,17 @@
     font-size: 16px;
 }
 
-.input input::placeholder {
-    color: #888;
-    font-weight: 300;
-}
-
 .forgot-password {
     padding-left: 70px;
     margin-top: 25px;
-    color: #888;
     font-size: 16px;
 }
 
 .forgot-password span {
-    color: #b399ff;
     cursor: pointer;
     font-weight: 600;
     transition: color 0.2s ease;
     position: relative;
-}
-
-.forgot-password span:hover {
-    color: #9d7aff;
 }
 
 .forgot-password span::after {
@@ -128,12 +167,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: #b399ff;
     transition: width 0.3s ease;
-}
-
-.forgot-password span:hover::after {
-    width: 100%;
 }
 
 .submit-container {
@@ -150,37 +184,30 @@
     width: 200px;
     height: 55px;
     color: #fff;
-    background: linear-gradient(135deg, #6a00ff, #9d7aff);
     border-radius: 50px;
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    box-shadow: 0 4px 10px rgba(106, 0, 255, 0.3);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .submit:hover {
-    background: linear-gradient(135deg, #5a00d4, #8d6aff);
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(106, 0, 255, 0.4);
 }
 
 .submit:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 5px rgba(106, 0, 255, 0.3);
 }
 
 .gray {
-    background: linear-gradient(135deg, #2a2a2a, #333);
     color: #aaa;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .gray:hover {
-    background: linear-gradient(135deg, #333, #3a3a3a);
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "./LoginSingup.css";
 import axios from 'axios';
 import person from '../../Assets/person.png';
@@ -8,25 +8,28 @@ import password from '../../Assets/password.png';
 
 const AuthForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [action, setAction] = useState("Sign Up");
+  const isSignup = location.pathname === "/signup";
+  const action = isSignup ? "Sign Up" : "Login";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
-  const [loadingAction, setLoadingAction] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (selectedAction) => {
-    setAction(selectedAction);
-    setLoadingAction(selectedAction);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     setError(null);
 
-    const endpoint = selectedAction === "Login" ? "/login" : "/signup";
-    const payload = selectedAction === "Login"
-      ? { email: formData.email, password: formData.password }
-      : formData;
+    const endpoint = isSignup ? "/signup" : "/login";
+    const payload = isSignup
+      ? formData
+      : { email: formData.email, password: formData.password };
 
     try {
       const response = await axios.post(
@@ -35,10 +38,16 @@ const AuthForm = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       alert(response.data.message);
+
+      if (isSignup) {
+        navigate("/login"); // redirect to login after successful signup
+      } else {
+        navigate("/central"); // ✅ redirect to central page after successful login
+      }
     } catch (error) {
       setError(error.response?.data?.error || "Something went wrong!");
     } finally {
-      setLoadingAction(null);
+      setLoading(false);
     }
   };
 
@@ -49,70 +58,75 @@ const AuthForm = () => {
         <div className="underline"></div>
       </div>
 
-      <div className="inputs">
-        {action === "Sign Up" && (
+      <form onSubmit={handleSubmit}>
+        <div className="inputs">
+          {isSignup && (
+            <div className="input">
+              <img src={person} alt="person-icon" className="icon" />
+              <input
+                type="text"
+                placeholder="Name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+          )}
+
           <div className="input">
-            <img src={person} alt="person-icon" className="icon" />
+            <img src={email} alt="email-icon" className="icon" />
             <input
-              type="text"
-              placeholder="Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
+          </div>
+
+          <div className="input">
+            <img src={password} alt="password-icon" className="icon" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+          </div>
+        </div>
+
+        {!isSignup && (
+          <div className="forgot-password">
+            Lost Password?{" "}
+            <span
+              style={{ cursor: "pointer", color: "#007bff" }}
+              onClick={() => navigate("/forgot-password")}
+            >
+              Click Here!
+            </span>
           </div>
         )}
 
-        <div className="input">
-          <img src={email} alt="email-icon" className="icon" />
-          <input
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-        </div>
+        {error && (
+          <div style={{ color: "red", textAlign: "center", marginTop: "15px" }}>
+            {error}
+          </div>
+        )}
 
-        <div className="input">
-          <img src={password} alt="password-icon" className="icon" />
-          <input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          />
-        </div>
-      </div>
-
-      {action === "Login" && (
-        <div className="forgot-password">
-          Lost Password?{" "}
-          <span
-            style={{ cursor: "pointer", color: "#007bff" }}
-            onClick={() => navigate("/forgot-password")}
+        <div className="submit-container">
+          <button
+            className="submit"
+            type="submit"
+            disabled={loading}
           >
-            Click Here!
-          </span>
+            {loading ? "Loading..." : action}
+          </button>
         </div>
-      )}
-
-      {error && <div style={{ color: "red", textAlign: "center", marginTop: "15px" }}>{error}</div>}
-
-      <div className="submit-container">
-        <button
-          className="submit"
-          onClick={() => handleSubmit("Sign Up")}
-          disabled={loadingAction !== null}
-        >
-          {loadingAction === "Sign Up" ? "Loading..." : "Sign Up"}
-        </button>
-        <button
-          className="submit gray"
-          onClick={() => handleSubmit("Login")}
-          disabled={loadingAction !== null}
-        >
-          {loadingAction === "Login" ? "Loading..." : "Login"}
-        </button>
-      </div>
+      </form>
     </div>
   );
 };

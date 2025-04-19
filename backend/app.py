@@ -39,7 +39,8 @@ def is_valid_email(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     return re.match(pattern, email) is not None
 
-# Routes
+# ===== Routes =====
+
 @app.route('/signup', methods=['POST'])
 def signup():
     try:
@@ -47,7 +48,6 @@ def signup():
         email = data.get('email')
         password = data.get('password')
 
-        # Step 1: Validate inputs
         if not email or not password:
             return jsonify({'error': 'Email and password are required'}), 400
 
@@ -57,11 +57,9 @@ def signup():
         if len(password) < 6:
             return jsonify({'error': 'Password must be at least 6 characters'}), 400
 
-        # Step 2: Check if user exists
         if User.query.filter_by(email=email).first():
             return jsonify({'error': 'Email already exists!'}), 400
 
-        # Step 3: Hash password and store user
         hashed_password = hash_password(password)
         new_user = User(email=email, password=hashed_password)
         db.session.add(new_user)
@@ -80,11 +78,9 @@ def login():
         email = data.get('email')
         password = data.get('password')
 
-        # Step 1: Validate inputs
         if not email or not password:
             return jsonify({'error': 'Email and password are required'}), 400
 
-        # Step 2: Find user and check password
         user = User.query.filter_by(email=email).first()
         if not user or not check_password(user.password, password):
             return jsonify({'error': 'Invalid email or password!'}), 401
@@ -95,5 +91,52 @@ def login():
         print("Login Error:", e)
         return jsonify({'error': 'Something went wrong!'}), 500
 
+@app.route('/request-reset', methods=['POST'])
+def request_reset():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'No user found with this email'}), 404
+
+        # Simulate sending reset link (can implement email later)
+        return jsonify({'message': 'Reset link simulated. Proceed to reset password.'}), 200
+
+    except Exception as e:
+        print("Request Reset Error:", e)
+        return jsonify({'error': 'Something went wrong!'}), 500
+
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        new_password = data.get('new_password')
+
+        if not email or not new_password:
+            return jsonify({'error': 'Email and new password are required'}), 400
+
+        if len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters'}), 400
+
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify({'error': 'No user found with this email'}), 404
+
+        user.password = hash_password(new_password)
+        db.session.commit()
+
+        return jsonify({'message': 'Password reset successfully!'}), 200
+
+    except Exception as e:
+        print("Reset Password Error:", e)
+        return jsonify({'error': 'Something went wrong!'}), 500
+
+# Run the app
 if __name__ == '__main__':
     app.run(debug=True)
