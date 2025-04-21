@@ -146,7 +146,7 @@ const ForgotPassword = () => {
         </div>
 
         <div className="contact-info">
-          <p>📩 راسلنا على: <a href="mailto:ksebteouii@gmail.com">ksebteouii@gmail.com</a></p>
+          <p>text us on: <a href="mailto:ksebteouii@gmail.com">ksebteouii@gmail.com</a></p>
         </div>
       </div>
 

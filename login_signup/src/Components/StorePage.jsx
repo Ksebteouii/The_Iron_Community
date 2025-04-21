@@ -13,9 +13,9 @@ const StorePage = () => {
   }, []);
 
   const featuredProducts = [
-    { id: 1, name: 'Alpine Explorer Backpack', price: '$149.99', image: '/api/placeholder/300/300' },
-    { id: 2, name: 'Wilderness Trail Jacket', price: '$219.99', image: '/api/placeholder/300/300' },
-    { id: 3, name: 'Summit Hiking Boots', price: '$179.99', image: '/api/placeholder/300/300' },
+    { id: 1, name: 'Alpine Explorer Backpack', price: '$149.99', image: '/images/backpack.jpg' },
+    { id: 2, name: 'Wilderness Trail Jacket', price: '$219.99', image: '/images/jacket.jpg' },
+    { id: 3, name: 'Summit Hiking Boots', price: '$179.99', image: '/images/boots.jpg' },
   ];
 
   return (
@@ -37,7 +37,7 @@ const StorePage = () => {
             <button className="cta-button">EXPLORE COLLECTION</button>
           </div>
           <div className="hero-image">
-            <div className="image-placeholder"></div>
+            <img src="/images/hero-gear.png" alt="Hero Gear" />
           </div>
         </div>
         
