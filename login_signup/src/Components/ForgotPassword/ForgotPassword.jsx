@@ -13,8 +13,8 @@ const ForgotPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSendResetLink = async () => {
-    if (!email) {
-      setError("Yo, drop that email first!");
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
 
@@ -22,20 +22,24 @@ const ForgotPassword = () => {
     setError(null);
     
     try {
-      // Simulate street-style "hacking" delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      // Your API call here
+      // Replace with API call to request reset
       setStep(2);
     } catch (err) {
-      setError("Ain't no account with that email, homie.");
+      setError("We couldn't find an account with that email.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResetPassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      setError("Please fill in both password fields.");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      setError("Passwords don't match, try again!");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -44,101 +48,109 @@ const ForgotPassword = () => {
     
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      // Your API call here
-      alert("💥 Password reset! You're in.");
+      // Replace with API call to reset password
+      alert("✅ Your password has been successfully reset.");
       navigate("/login");
     } catch (err) {
-      setError("Failed! Server's acting sus.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="forgot-street-container">
-      {/* Graffiti wall background */}
+    <div className="forgot-container">
       <div className="graffiti-wall"></div>
-      
-      {/* Main card - like a street sign */}
-      <div className="street-sign">
-        <h1 className="title-tag">
-          <span className="spray-red">RESET</span>
-          <span className="spray-blue">PASSWORD</span>
+
+      <div className="forgot-card">
+        <h1 className="forgot-title">
+          <span className="highlight-red">Reset</span>{" "}
+          <span className="highlight-blue">Password</span>
         </h1>
 
         {step === 1 ? (
-          <div className="street-inputs">
-            <div className="tag-input">
+          <div className="form-group">
+            <label htmlFor="email" className="input-label">Email Address</label>
+            <div className="input-wrapper">
               <span className="input-icon">✉️</span>
               <input
                 type="email"
-                placeholder="YOUR@EMAIL.COM"
+                id="email"
+                placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="street-field"
+                className="form-input"
               />
             </div>
             <button 
               onClick={handleSendResetLink}
-              className="street-button"
+              className="submit-button"
               disabled={loading}
             >
-              {loading ? "HACKING..." : "SEND LINK →"}
+              {loading ? "Sending..." : "Send Reset Link"}
             </button>
           </div>
         ) : (
-          <div className="street-inputs">
-            <div className="tag-input">
-              <span className="input-icon">🔑</span>
+          <div className="form-group">
+            <label htmlFor="new-password" className="input-label">New Password</label>
+            <div className="input-wrapper">
+              <span className="input-icon">🔒</span>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="NEW PASSWORD"
+                id="new-password"
+                placeholder="New password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="street-field"
+                className="form-input"
               />
               <button 
-                className="show-password"
+                type="button"
+                className="toggle-visibility"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? "🙈" : "👁️"}
               </button>
             </div>
-            
-            <div className="tag-input">
-              <span className="input-icon">🔑</span>
+
+            <label htmlFor="confirm-password" className="input-label">Confirm Password</label>
+            <div className="input-wrapper">
+              <span className="input-icon">🔒</span>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="CONFIRM IT"
+                id="confirm-password"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="street-field"
+                className="form-input"
               />
             </div>
 
             <button 
               onClick={handleResetPassword}
-              className="street-button"
+              className="submit-button"
               disabled={loading}
             >
-              {loading ? "RESETTING..." : "CONFIRM →"}
+              {loading ? "Resetting..." : "Confirm Reset"}
             </button>
           </div>
         )}
 
         {error && (
-          <div className="street-error">
-            ⚠️ {error}
-          </div>
+          <div className="error-message">⚠️ {error}</div>
         )}
 
         <div className="back-link">
-          <a onClick={() => navigate('/login')}>← Back to Login</a>
+          <button onClick={() => navigate('/login')} className="back-button">
+            ← Back to Login
+          </button>
+        </div>
+
+        <div className="contact-info">
+          <p>📩 راسلنا على: <a href="mailto:ksebteouii@gmail.com">ksebteouii@gmail.com</a></p>
         </div>
       </div>
 
-      {/* Graffiti tag at the bottom */}
-      <div className="signature-tag">© THE CREW</div>
+      <footer className="footer-tag">© 2025 The Crew</footer>
     </div>
   );
 };
