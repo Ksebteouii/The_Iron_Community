@@ -10,11 +10,14 @@
 body {
   font-family: 'Barlow Condensed', sans-serif;
   color: #f5f5f5;
+  background: linear-gradient(160deg, #0e2b16 0%, #1a4426 50%, #143920 100%);
+  background-attachment: fixed;
   overflow-x: hidden;
   width: 100vw;
   min-height: 100vh;
 }
 
+/* Container animation */
 .store-container {
   width: 100%;
   min-height: 100vh;
@@ -22,7 +25,7 @@ body {
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px);
-  padding-top: 80px; /* Content starts 80px from the top */
+  padding-top: 80px;
 }
 
 .store-container.loaded {
@@ -195,7 +198,7 @@ body {
   width: 100%;
   max-width: 500px;
   height: 400px;
-  background: linear-gradient(135deg, #153b1e 0%, #2a5d35 100%);
+  background: linear-gradient(135deg, #143920 0%, #215c38 100%);
   position: relative;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
@@ -231,6 +234,7 @@ body {
   display: inline-block;
   left: 50%;
   transform: translateX(-50%);
+  color: #d3f2d6;
 }
 
 .section-title::before {
