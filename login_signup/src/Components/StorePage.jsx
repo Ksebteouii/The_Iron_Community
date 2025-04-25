@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CartContext } from './CartContext';
 import './StorePage.css';
 
 const StorePage = () => {
+  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [productHover, setProductHover] = useState(null);
-  
+  const { addToCart, cartItemCount } = useContext(CartContext);
+
   useEffect(() => {
     // Simulate loading and trigger animations
     setTimeout(() => {
@@ -13,9 +17,9 @@ const StorePage = () => {
   }, []);
 
   const featuredProducts = [
-    { id: 1, name: 'Alpine Explorer Backpack', price: '$149.99', image: '/images/backpack.jpg' },
-    { id: 2, name: 'Wilderness Trail Jacket', price: '$219.99', image: '/images/jacket.jpg' },
-    { id: 3, name: 'Summit Hiking Boots', price: '$179.99', image: '/images/boots.jpg' },
+    { id: 1, name: 'Alpine Explorer Backpack', price: 149.99, image: '/images/backpack.jpg' },
+    { id: 2, name: 'Wilderness Trail Jacket', price: 219.99, image: '/images/jacket.jpg' },
+    { id: 3, name: 'Summit Hiking Boots', price: 179.99, image: '/images/boots.jpg' },
   ];
 
   return (
@@ -26,14 +30,28 @@ const StorePage = () => {
         </div>
         <h1 className="store-title">WILD OUTDOORS</h1>
         <p className="store-tagline">EXPLORE THE WILDERNESS • CONQUER THE PEAKS</p>
+        
+        <div className="cart-container">
+          <button 
+            className="cart-button"
+            onClick={() => navigate('/cart')}
+          >
+            <span className="cart-icon">🛒</span>
+            {cartItemCount > 0 && (
+              <span className="cart-count">{cartItemCount}</span>
+            )}
+          </button>
+        </div>
       </div>
       
       <div className="store-content">
         <div className="hero-section">
           <div className="hero-text">
             <h2>PREMIUM <span className="highlight">OUTDOOR GEAR</span></h2>
-            <p className="store-description">We're crafting the ultimate collection for nature enthusiasts who demand 
-            quality and performance. Our gear is designed for those who seek adventure in the wild.</p>
+            <p className="store-description">
+              We're crafting the ultimate collection for nature enthusiasts who demand 
+              quality and performance. Our gear is designed for those who seek adventure in the wild.
+            </p>
             <button className="cta-button">EXPLORE COLLECTION</button>
           </div>
           <div className="hero-image">
@@ -42,7 +60,7 @@ const StorePage = () => {
         </div>
         
         <div className="featured-section">
-          <h3 className="section-title">COMING SOON</h3>
+          <h3 className="section-title">FEATURED PRODUCTS</h3>
           <div className="products-grid">
             {featuredProducts.map(product => (
               <div 
@@ -55,13 +73,21 @@ const StorePage = () => {
                   <img src={product.image} alt={product.name} />
                   {productHover === product.id && (
                     <div className="product-overlay">
-                      <button className="notify-button">NOTIFY ME</button>
+                      <button 
+                        className="add-to-cart-button"
+                        onClick={() => {
+                          addToCart(product);
+                          setProductHover(null);
+                        }}
+                      >
+                        ADD TO CART
+                      </button>
                     </div>
                   )}
                 </div>
                 <div className="product-info">
                   <h4 className="product-name">{product.name}</h4>
-                  <span className="product-price">{product.price}</span>
+                  <span className="product-price">${product.price.toFixed(2)}</span>
                 </div>
               </div>
             ))}

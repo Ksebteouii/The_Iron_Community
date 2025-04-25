@@ -6,7 +6,6 @@ import mountains from '../Assets/mountains.jpg';
 const CentralPage = () => {
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
   
   useEffect(() => {
     // Trigger animations after component mounts
@@ -14,11 +13,6 @@ const CentralPage = () => {
       setIsLoaded(true);
     }, 300);
   }, []);
-
-  const handleSearch = () => {
-    console.log("Searching for:", searchValue);
-    // Add search functionality here
-  };
 
   return (
     <div 
@@ -48,18 +42,39 @@ const CentralPage = () => {
           <h1 className="main-title">Embrace The Wild</h1>
           <p className="subtitle">Conquer Nature with the Right Gear</p>
           
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="What adventure calls you?"
-              className="central-search"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <button className="search-button" onClick={handleSearch}>
-              Explore
-            </button>
+          <div className="adventure-categories">
+            <div className="adventure-category">
+              <h3 className="category-title">Hiking</h3>
+              <p className="category-description">
+                Step into the wilderness and discover scenic trails that wind through forests, mountains, and valleys. 
+                Our community provides expert tips on hiking gear, trail information, and safety guidelines to make your 
+                journey memorable and enjoyable.
+              </p>
+            </div>
+            
+            <div className="adventure-category">
+              <h3 className="category-title">Camping</h3>
+              <p className="category-description">
+                Experience the freedom of the outdoors with our camping resources. From weekend getaways to extended backpacking trips, 
+                learn about essential equipment, camp setup techniques, and how to leave no trace while enjoying nature's beauty.
+              </p>
+            </div>
+            
+            <div className="adventure-category">
+              <h3 className="category-title">Climbing</h3>
+              <p className="category-description">
+                Challenge yourself with rock climbing adventures tailored for all skill levels. Our climbing guides cover equipment selection, 
+                technique improvement, safety protocols, and the best climbing destinations around the world to help you reach new heights.
+              </p>
+            </div>
+            
+            <div className="adventure-category">
+              <h3 className="category-title">Trails</h3>
+              <p className="category-description">
+                Explore our curated collection of trails ranging from easy walks to challenging multi-day hikes. We provide detailed maps, 
+                difficulty ratings, seasonal recommendations, and insider tips to help you plan your perfect outdoor adventure.
+              </p>
+            </div>
           </div>
           
           <div className="feature-tags">
