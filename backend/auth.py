@@ -9,11 +9,12 @@ auth_bp = Blueprint('auth', __name__)
 def signup():
     try:
         data = request.get_json()
+        name = data.get('name')
         email = data.get('email')
         password = data.get('password')
 
-        if not email or not password:
-            return jsonify({'error': 'Email and password are required'}), 400
+        if not email or not password or not name:
+            return jsonify({'error': 'Name, email and password are required'}), 400
 
         if not is_valid_email(email):
             return jsonify({'error': 'Invalid email format'}), 400
@@ -25,7 +26,7 @@ def signup():
             return jsonify({'error': 'Email already exists!'}), 400
 
         hashed_password = hash_password(password)
-        new_user = User(email=email, password=hashed_password)
+        new_user = User(name=name, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
 
@@ -49,7 +50,14 @@ def login():
         if not user or not check_password(user.password, password):
             return jsonify({'error': 'Invalid email or password!'}), 401
 
-        return jsonify({'message': 'Login successful!'}), 200
+        user_data = {
+            'id': user.id,
+            'email': user.email,
+            'is_admin': getattr(user, 'is_admin', False)
+        }
+        print(f"Login successful response data: {user_data}")
+
+        return jsonify({'message': 'Login successful!', 'user': user_data}), 200
 
     except Exception as e:
         print("Login Error:", e)

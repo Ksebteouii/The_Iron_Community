@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import "./LoginSingup.css";
 import axios from 'axios';
 import person from '../../Assets/person.png';
 import email from '../../Assets/email.png';
 import password from '../../Assets/password.png';
+import { UserContext } from '../../UserContext';
 
 const AuthForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setUser } = useContext(UserContext);
 
   const isSignup = location.pathname === "/signup";
   const action = isSignup ? "Sign Up" : "Login";
@@ -31,24 +33,38 @@ const AuthForm = () => {
       ? formData
       : { email: formData.email, password: formData.password };
 
-    try {
-      const response = await axios.post(
-        `http://localhost:5000${endpoint}`,
-        payload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      alert(response.data.message);
+      try {
+        const response = await axios.post(
+          `http://localhost:5000${endpoint}`,
+          payload,
+          { headers: { "Content-Type": "application/json" } }
+        );
+        console.log("Login response:", response.data);
 
-      if (isSignup) {
-        navigate("/login"); // redirect to login after successful signup
-      } else {
-        navigate("/central"); // ✅ redirect to central page after successful login
+        if (isSignup) {
+          navigate("/login"); // redirect to login after successful signup
+        } else {
+          try {
+            // Save user info including is_admin flag to context
+            if (!response.data.user) {
+              throw new Error("User data missing in login response");
+            }
+            setUser(response.data.user);
+            if (response.data.user.is_admin) {
+              navigate("/admin"); // redirect admin to admin dashboard
+            } else {
+              navigate("/central"); // redirect normal user to central page
+            }
+          } catch (e) {
+            console.error("Error after login success:", e.stack || e);
+            setError("An error occurred after login.");
+          }
+        }
+      } catch (error) {
+        setError(error.response?.data?.error || "Something went wrong!");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      setError(error.response?.data?.error || "Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
