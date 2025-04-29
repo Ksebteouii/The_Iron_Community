@@ -10,7 +10,6 @@ const StorePage = () => {
   const { addToCart, cartItemCount } = useContext(CartContext);
 
   useEffect(() => {
-    // Simulate loading and trigger animations
     setTimeout(() => {
       setIsLoaded(true);
     }, 300);
@@ -20,6 +19,9 @@ const StorePage = () => {
     { id: 1, name: 'Alpine Explorer Backpack', price: 149.99, image: '/images/backpack.jpg' },
     { id: 2, name: 'Wilderness Trail Jacket', price: 219.99, image: '/images/jacket.jpg' },
     { id: 3, name: 'Summit Hiking Boots', price: 179.99, image: '/images/boots.jpg' },
+    { id: 4, name: 'Survival Knife', price: 49.99, image: '/images/knife.png' },
+    { id: 5, name: 'Camping Tent', price: 129.99, image: '/images/tente.png' },
+    { id: 6, name: 'Outdoor Sleeping Bed', price: 89.99, image: '/images/bed.png' },
   ];
 
   return (
@@ -30,12 +32,9 @@ const StorePage = () => {
         </div>
         <h1 className="store-title">WILD OUTDOORS</h1>
         <p className="store-tagline">EXPLORE THE WILDERNESS • CONQUER THE PEAKS</p>
-        
+
         <div className="cart-container">
-          <button 
-            className="cart-button"
-            onClick={() => navigate('/cart')}
-          >
+          <button className="cart-button" onClick={() => navigate('/cart')}>
             <span className="cart-icon">🛒</span>
             {cartItemCount > 0 && (
               <span className="cart-count">{cartItemCount}</span>
@@ -43,7 +42,7 @@ const StorePage = () => {
           </button>
         </div>
       </div>
-      
+
       <div className="store-content">
         <div className="hero-section">
           <div className="hero-text">
@@ -58,7 +57,7 @@ const StorePage = () => {
             <img src="/images/hero-gear.png" alt="Hero Gear" />
           </div>
         </div>
-        
+
         <div className="featured-section">
           <h3 className="section-title">FEATURED PRODUCTS</h3>
           <div className="products-grid">
@@ -94,7 +93,7 @@ const StorePage = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="store-footer">
         <div className="footer-content">
           <div className="social-icons">
