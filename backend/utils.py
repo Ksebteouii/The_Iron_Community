@@ -1,4 +1,3 @@
-# utils.py
 import bcrypt
 import re
 
@@ -14,5 +13,20 @@ def check_password(hashed_password, user_password):
     )
 
 def is_valid_email(email):
-    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    # Improved email regex pattern
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(pattern, email) is not None
+
+def is_strong_password(password):
+    # Password must be at least 8 characters, contain uppercase, lowercase, digit, and special character
+    if len(password) < 8:
+        return False
+    if not re.search(r'[A-Z]', password):
+        return False
+    if not re.search(r'[a-z]', password):
+        return False
+    if not re.search(r'\d', password):
+        return False
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
+    return True

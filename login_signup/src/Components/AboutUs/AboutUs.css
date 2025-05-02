@@ -1,0 +1,124 @@
+/* AboutUs.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+.about-us-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 3rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  font-family: 'Open Sans', sans-serif;
+  color: #333;
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid #3a8c40;
+}
+
+/* Nature-inspired decorative elements */
+.about-us-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='%23e8f5e9' d='M46.8-4.8c6.4 3.2 11 8.8 13.6 15.3s3.5 13.8 3.8 20.9c.3 7.1 0 14.1-2.4 20.7-2.4 6.5-6.8 12.6-12.6 15.9-5.8 3.4-13 4-19.9 2.9-7-1.1-13.7-3.9-18.8-8.3-5.1-4.4-8.5-10.4-10.2-16.8-1.7-6.4-1.8-13.3.2-19.7 1.9-6.4 5.8-12.4 10.7-16.7C16.1-6 22.1-8.7 28.5-9.7c6.4-1 13.2-.4 18.3 4.9z'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.about-us-container::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='%23e8f5e9' d='M39.9-0.5C52.6 0.4 65 6 73.2 15.5s12.3 23.8 9.5 36c-2.8 12.2-13.4 22.1-24.3 29.8-10.9 7.8-22.2 13.5-34.3 14.1-12.1 0.6-25-4-33.3-12.9-8.3-8.9-12-22.1-9.8-33.4s10.2-20.7 20.1-27.2C10.8-4.7 23.3-8.6 30.5-7.7c7.2 0.9 9.1 6.7 9.4 7.2z'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.about-us-container h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #2e7d32;
+  position: relative;
+  z-index: 1;
+}
+
+.about-us-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #2e7d32, #81c784);
+  border-radius: 2px;
+}
+
+.about-us-container p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+  max-width: 85%;
+  color: #444;
+}
+
+/* Animation for subtle emphasis */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.about-us-container h2 {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.about-us-container p {
+  animation: fadeIn 0.8s 0.3s ease-out forwards;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .about-us-container {
+    padding: 2rem;
+    margin: 2rem 1rem;
+    border-left: 4px solid #3a8c40;
+  }
+  
+  .about-us-container h2 {
+    font-size: 2rem;
+  }
+  
+  .about-us-container p {
+    font-size: 1.1rem;
+    max-width: 100%;
+  }
+  
+  .about-us-container::before,
+  .about-us-container::after {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .about-us-container {
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .about-us-container h2 {
+    font-size: 1.8rem;
+  }
+}

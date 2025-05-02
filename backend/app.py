@@ -3,6 +3,7 @@ from flask_cors import CORS
 from models import db
 from auth import auth_bp
 from admin import admin_bp
+from messages import messages_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,7 @@ with app.app_context():
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(messages_bp)
 
 from cart import cart_bp
 app.register_blueprint(cart_bp)

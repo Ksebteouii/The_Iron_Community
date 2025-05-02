@@ -19,23 +19,16 @@ const CentralPage = () => {
       className={`central-container ${isLoaded ? 'loaded' : ''}`}
       style={{ backgroundImage: `url(${mountains})` }}
     >
-      {/* Top Navigation Bar */}
       <div className="top-bar">
-        <div className="top-left">
-          <div className="logo-icon">IC</div>
-          <h2 className="site-title">Iron Community</h2>
-        </div>
-        <div className="top-right">
+        <div>
           <button
             className="nav-button"
             onClick={() => navigate('/store')}
           >
-            <span className="button-text">Visit Store</span>
-            <span className="button-icon">→</span>
+            Visit Store
           </button>
         </div>
       </div>
-
       {/* Centered Content */}
       <div className="content-wrapper">
         <div className="central-content">

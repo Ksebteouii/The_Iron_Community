@@ -1,20 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CartContext } from './CartContext';
 import './StorePage.css';
+import NavBar from './NavBar';
 
 const StorePage = () => {
-  const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const [productHover, setProductHover] = useState(null);
-  const { addToCart, cartItemCount } = useContext(CartContext);
-
+  const { addToCart } = useContext(CartContext);
+  
   useEffect(() => {
     setTimeout(() => {
       setIsLoaded(true);
     }, 300);
   }, []);
-
+  
   const featuredProducts = [
     { id: 1, name: 'Alpine Explorer Backpack', price: 149.99, image: '/images/backpack.jpg' },
     { id: 2, name: 'Wilderness Trail Jacket', price: 219.99, image: '/images/jacket.jpg' },
@@ -23,26 +22,10 @@ const StorePage = () => {
     { id: 5, name: 'Camping Tent', price: 129.99, image: '/images/tente.png' },
     { id: 6, name: 'Outdoor Sleeping Bed', price: 89.99, image: '/images/bed.png' },
   ];
-
+  
   return (
     <div className={`store-container ${isLoaded ? 'loaded' : ''}`}>
-      <div className="store-header">
-        <div className="logo-container">
-          <div className="logo">WO</div>
-        </div>
-        <h1 className="store-title">WILD OUTDOORS</h1>
-        <p className="store-tagline">EXPLORE THE WILDERNESS • CONQUER THE PEAKS</p>
-
-        <div className="cart-container">
-          <button className="cart-button" onClick={() => navigate('/cart')}>
-            <span className="cart-icon">🛒</span>
-            {cartItemCount > 0 && (
-              <span className="cart-count">{cartItemCount}</span>
-            )}
-          </button>
-        </div>
-      </div>
-
+      <NavBar />
       <div className="store-content">
         <div className="hero-section">
           <div className="hero-text">
@@ -51,19 +34,19 @@ const StorePage = () => {
               We're crafting the ultimate collection for nature enthusiasts who demand 
               quality and performance. Our gear is designed for those who seek adventure in the wild.
             </p>
-            <button className="cta-button">EXPLORE COLLECTION</button>
+            {/* Removed the unnecessary "VISIT STORE" button */}
           </div>
           <div className="hero-image">
             <img src="/images/hero-gear.png" alt="Hero Gear" />
           </div>
         </div>
-
+        
         <div className="featured-section">
           <h3 className="section-title">FEATURED PRODUCTS</h3>
           <div className="products-grid">
             {featuredProducts.map(product => (
               <div 
-                className="product-card" 
+                className="product-card"
                 key={product.id}
                 onMouseEnter={() => setProductHover(product.id)}
                 onMouseLeave={() => setProductHover(null)}
@@ -93,7 +76,7 @@ const StorePage = () => {
           </div>
         </div>
       </div>
-
+      
       <div className="store-footer">
         <div className="footer-content">
           <div className="social-icons">

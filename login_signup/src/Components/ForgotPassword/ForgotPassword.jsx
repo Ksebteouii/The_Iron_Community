@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ForgotPassword.css';
+import axios from 'axios';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -10,7 +11,9 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [resetToken, setResetToken] = useState(null);
 
   const handleSendResetLink = async () => {
     if (!email.trim()) {
@@ -20,13 +23,15 @@ const ForgotPassword = () => {
 
     setLoading(true);
     setError(null);
+    setSuccess(null);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Replace with API call to request reset
+      const response = await axios.post('http://localhost:5000/request-reset', { email });
+      setResetToken(response.data.token);
+      setSuccess("Reset link sent. Please check your email.");
       setStep(2);
     } catch (err) {
-      setError("We couldn't find an account with that email.");
+      setError(err.response?.data?.error || "We couldn't find an account with that email.");
     } finally {
       setLoading(false);
     }
@@ -45,14 +50,16 @@ const ForgotPassword = () => {
 
     setLoading(true);
     setError(null);
+    setSuccess(null);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Replace with API call to reset password
-      alert("✅ Your password has been successfully reset.");
-      navigate("/login");
+      await axios.post('http://localhost:5000/reset-password', { token: resetToken, new_password: newPassword });
+      setSuccess("✅ Your password has been successfully reset.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err.response?.data?.error || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -137,6 +144,10 @@ const ForgotPassword = () => {
 
         {error && (
           <div className="error-message">⚠️ {error}</div>
+        )}
+
+        {success && (
+          <div className="success-message">✅ {success}</div>
         )}
 
         <div className="back-link">

@@ -9,6 +9,8 @@ import CentralPage from './Components/CentralPage/CentralPage.jsx';
 import StorePage from "./Components/StorePage";
 import CartPage from "./Components/CartPage";
 import AdminDashboard from "./Components/AdminDashboard";
+import ContactUs from "./Components/ContactUs/ContactUs";
+import AboutUs from "./Components/AboutUs/AboutUs";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
               <Route path="/store" element={<StorePage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/contact-us" element={<ContactUs />} />
+              <Route path="/about-us" element={<AboutUs />} />
             </Routes>
           </div>
         </Router>

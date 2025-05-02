@@ -6,6 +6,8 @@ const AdminDashboard = () => {
   const [carts, setCarts] = useState([]);
   const [editCartId, setEditCartId] = useState(null);
   const [editItems, setEditItems] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [showMessages, setShowMessages] = useState(false);
 
   useEffect(() => {
     fetchCarts();
@@ -22,6 +24,25 @@ const AdminDashboard = () => {
       const errorMsg = error.response?.data?.error || error.message || 'Unknown error';
       alert('Failed to fetch carts: ' + errorMsg);
     }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/admin/contact-messages', {
+        headers: { 'X-Admin': 'true' }
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Fetch messages error:', error);
+      alert('Failed to fetch messages: ' + (error.response?.data?.error || error.message));
+    }
+  };
+
+  const toggleMessages = () => {
+    if (!showMessages) {
+      fetchMessages();
+    }
+    setShowMessages(!showMessages);
   };
 
   const handleEditClick = (cart) => {
@@ -62,6 +83,38 @@ const AdminDashboard = () => {
   return (
     <div className={styles.adminDashboard}>
       <h2>Admin Dashboard - User Carts</h2>
+      <button onClick={toggleMessages} style={{ marginBottom: '20px' }}>
+        {showMessages ? 'Hide Contact Messages' : 'View Contact Messages'}
+      </button>
+      {showMessages && (
+        <div>
+          <h3>Contact Messages</h3>
+          <table border="1" cellPadding="8" cellSpacing="0" className={styles.table}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {messages.length > 0 ? (
+                messages.map(msg => (
+                  <tr key={msg.id}>
+                    <td>{msg.name}</td>
+                    <td>{msg.email}</td>
+                    <td>{msg.message}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3">No messages found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
       <table border="1" cellPadding="8" cellSpacing="0" className={styles.table}>
         <thead>
           <tr>

@@ -22,49 +22,92 @@ const AuthForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const validateEmail = (email) => {
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return pattern.test(email);
+  };
+
+  const validatePassword = (password) => {
+    // Password must be at least 8 characters, contain uppercase, lowercase, digit, and special character
+    if (password.length < 8) return false;
+    if (!/[A-Z]/.test(password)) return false;
+    if (!/[a-z]/.test(password)) return false;
+    if (!/\d/.test(password)) return false;
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
+
+    if (isSignup) {
+      if (!formData.name.trim()) {
+        setError("Name is required.");
+        setLoading(false);
+        return;
+      }
+      if (!validateEmail(formData.email)) {
+        setError("Invalid email format.");
+        setLoading(false);
+        return;
+      }
+      if (!validatePassword(formData.password)) {
+        setError("Password must be at least 8 characters and include uppercase, lowercase, digit, and special character.");
+        setLoading(false);
+        return;
+      }
+    } else {
+      if (!formData.email.trim() || !formData.password) {
+        setError("Email and password are required.");
+        setLoading(false);
+        return;
+      }
+    }
 
     const endpoint = isSignup ? "/signup" : "/login";
     const payload = isSignup
       ? formData
       : { email: formData.email, password: formData.password };
 
-      try {
-        const response = await axios.post(
-          `http://localhost:5000${endpoint}`,
-          payload,
-          { headers: { "Content-Type": "application/json" } }
-        );
-        console.log("Login response:", response.data);
+    try {
+      const response = await axios.post(
+        `http://localhost:5000${endpoint}`,
+        payload,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("Login response:", response.data);
 
-        if (isSignup) {
-          navigate("/login"); // redirect to login after successful signup
-        } else {
-          try {
-            // Save user info including is_admin flag to context
-            if (!response.data.user) {
-              throw new Error("User data missing in login response");
-            }
-            setUser(response.data.user);
-            if (response.data.user.is_admin) {
-              navigate("/admin"); // redirect admin to admin dashboard
-            } else {
-              navigate("/central"); // redirect normal user to central page
-            }
-          } catch (e) {
-            console.error("Error after login success:", e.stack || e);
-            setError("An error occurred after login.");
+      if (isSignup) {
+        setSuccess("Signup successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        try {
+          if (!response.data.user) {
+            throw new Error("User data missing in login response");
           }
+          setUser(response.data.user);
+          if (response.data.user.is_admin) {
+            navigate("/admin");
+          } else {
+            navigate("/central");
+          }
+        } catch (e) {
+          console.error("Error after login success:", e.stack || e);
+          setError("An error occurred after login.");
         }
-      } catch (error) {
-        setError(error.response?.data?.error || "Something went wrong!");
-      } finally {
-        setLoading(false);
       }
+    } catch (error) {
+      setError(error.response?.data?.error || "Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -130,6 +173,12 @@ const AuthForm = () => {
         {error && (
           <div style={{ color: "red", textAlign: "center", marginTop: "15px" }}>
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div style={{ color: "green", textAlign: "center", marginTop: "15px" }}>
+            {success}
           </div>
         )}
 
