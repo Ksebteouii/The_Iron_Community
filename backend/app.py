@@ -4,6 +4,7 @@ from models import db
 from auth import auth_bp
 from admin import admin_bp
 from messages import messages_bp
+from profile import profile_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +21,7 @@ with app.app_context():
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(messages_bp)
+app.register_blueprint(profile_bp)
 
 from cart import cart_bp
 app.register_blueprint(cart_bp)

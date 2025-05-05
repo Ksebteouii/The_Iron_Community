@@ -27,6 +27,12 @@ const CentralPage = () => {
           >
             Visit Store
           </button>
+          <button
+            className="nav-button"
+            onClick={() => navigate('/profile')}
+          >
+            Profile
+          </button>
         </div>
       </div>
       {/* Centered Content */}

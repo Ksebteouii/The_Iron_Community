@@ -6,6 +6,7 @@ import './CartPage.css';
 const CartPage = () => {
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const { cart, updateQuantity, removeFromCart } = useContext(CartContext);
 
   useEffect(() => {
@@ -28,13 +29,40 @@ const CartPage = () => {
     return calculateSubtotal() + calculateShipping();
   };
   
-  const handleCheckout = () => {
-    alert('Checkout functionality will be implemented here.');
-    // Here you would normally proceed to a checkout page or process
+  const handleCheckout = async () => {
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      // Here you would typically:
+      // 1. Create an order in your backend
+      // 2. Process payment
+      // 3. Clear the cart
+      // 4. Redirect to success page
+
+      // For now, we'll simulate a successful checkout
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+      
+      // Clear the cart (you'll need to implement this in your CartContext)
+      cart.forEach(item => removeFromCart(item.id));
+      
+      // Show success message
+      alert('Order placed successfully! Thank you for your purchase.');
+      
+      // Redirect to store page
+      navigate('/store');
+    } catch (error) {
+      alert('There was an error processing your order. Please try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
-    <div className={`cart-page-container ${isLoaded ? 'loaded' : ''}`}>
+    <div className={`cart-page-container${cart.length === 0 ? ' empty-cart-bg' : ''} ${isLoaded ? 'loaded' : ''}`}>
       <div className="cart-header">
         <div className="logo-container" onClick={() => navigate('/store')}>
           <div className="logo">WO</div>
@@ -48,6 +76,15 @@ const CartPage = () => {
       <div className="cart-content">
         {cart.length === 0 ? (
           <div className="empty-cart">
+            <div className="empty-cart-icon" role="img" aria-label="Empty Cart">
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="32" cy="56" rx="18" ry="4" fill="#2EA83522"/>
+                <path d="M16 20h32l-4 24H20L16 20z" fill="#2EA835" stroke="#1F7529" strokeWidth="2"/>
+                <circle cx="24" cy="48" r="3" fill="#fff" stroke="#1F7529" strokeWidth="2"/>
+                <circle cx="40" cy="48" r="3" fill="#fff" stroke="#1F7529" strokeWidth="2"/>
+                <path d="M20 28h24" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
             <h2>Your cart is empty</h2>
             <p>Looks like you haven't added any products to your cart yet.</p>
             <button 
@@ -79,6 +116,7 @@ const CartPage = () => {
                     <button 
                       className="quantity-btn"
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      disabled={isCheckingOut}
                     >
                       -
                     </button>
@@ -86,6 +124,7 @@ const CartPage = () => {
                     <button 
                       className="quantity-btn"
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      disabled={isCheckingOut}
                     >
                       +
                     </button>
@@ -97,6 +136,7 @@ const CartPage = () => {
                   <button 
                     className="remove-btn"
                     onClick={() => removeFromCart(item.id)}
+                    disabled={isCheckingOut}
                   >
                     ✕
                   </button>
@@ -128,10 +168,18 @@ const CartPage = () => {
               </div>
               
               <button 
-                className="checkout-button"
+                className={`checkout-button ${isCheckingOut ? 'checking-out' : ''}`}
                 onClick={handleCheckout}
+                disabled={isCheckingOut}
               >
-                PROCEED TO CHECKOUT
+                {isCheckingOut ? (
+                  <>
+                    <span className="spinner"></span>
+                    Processing...
+                  </>
+                ) : (
+                  'PROCEED TO CHECKOUT'
+                )}
               </button>
               
               <p className="shipping-note">

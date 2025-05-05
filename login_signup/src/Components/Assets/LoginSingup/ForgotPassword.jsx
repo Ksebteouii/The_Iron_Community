@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import styles from './ForgotPassword.module.css';
+import styles from './LoginSingup.module.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -139,4 +139,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ForgotPassword; 

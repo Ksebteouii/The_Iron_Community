@@ -9,8 +9,7 @@ cart_bp = Blueprint('cart', __name__)
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # In real app, use session or token to get user
-        # Here, we simulate user by email in header for demo
+       
         user_email = request.headers.get('X-User-Email')
         if not user_email:
             return jsonify({'error': 'Authentication required'}), 401

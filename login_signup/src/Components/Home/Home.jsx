@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./Home.css";
+import styles from './Home.module.css';
 
 const Home = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -12,53 +12,66 @@ const Home = () => {
   }, []);
 
   return (
-    <div className={`home-container ${isLoaded ? "loaded" : ""}`}>
-      <div className="background-shapes">
-        <div className="shape shape-1"></div>
-        <div className="shape shape-2"></div>
-        <div className="shape shape-3"></div>
+    <div className={`${styles.homeContainer} ${isLoaded ? styles.loaded : ""}`}>
+      <div className={styles.bgShapes}>
+        <div className={styles.bgShape1}></div>
+        <div className={styles.bgShape2}></div>
+        <div className={styles.bgShape3}></div>
       </div>
       
-      <main className="main-content">
-        <div className="content-container">
-          <div className="logo-container">
-            <div className="logo">IC</div>
+      <div className={styles.particles}>
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className={styles.particle}></div>
+        ))}
+      </div>
+
+      <main className={styles.mainContent}>
+        <div className={styles.container}>
+          <div className={styles.header}>
+            <div className={styles.logoContainer}>
+              <div className={styles.logo}>
+                <span className={styles.logoIcon}>🌿</span>
+                <span className={styles.logoText}>IC</span>
+              </div>
+            </div>
+            
+            <h1 className={styles.mainTitle}>
+              Welcome to <span className={styles.highlight}>Iron Community</span>
+            </h1>
+            <div className={styles.underline}></div>
           </div>
           
-          <h1 className="main-title">Welcome to <span className="highlight">Iron Community</span></h1>
-          <p className="subtitle">Join fellow outdoor enthusiasts and discover the best nature has to offer</p>
-          
-          <div className="auth-buttons">
-            <Link to="/login" className="auth-btn login-btn">
-              <span className="btn-text">Login</span>
-              <span className="btn-icon">→</span>
+          <div className={styles.authButtons}>
+            <Link to="/login" className={`${styles.authBtn} ${styles.loginBtn}`}>
+              <span className={styles.btnText}>Login</span>
+              <span className={styles.btnIcon}>→</span>
             </Link>
-            <Link to="/signup" className="auth-btn signup-btn">
-              <span className="btn-text">Sign Up</span>
-              <span className="btn-icon">+</span>
+            <Link to="/signup" className={`${styles.authBtn} ${styles.signupBtn}`}>
+              <span className={styles.btnText}>Sign Up</span>
+              <span className={styles.btnIcon}>+</span>
             </Link>
           </div>
           
-          <div className="features-container">
-            <div className="feature">
-              <div className="feature-icon">🏕️</div>
-              <div className="feature-text">
+          <div className={styles.featuresContainer}>
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>🏕️</div>
+              <div className={styles.featureText}>
                 <h3>Discover Trails</h3>
                 <p>Explore top-rated hiking paths</p>
               </div>
             </div>
             
-            <div className="feature">
-              <div className="feature-icon">🗻</div>
-              <div className="feature-text">
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>🗻</div>
+              <div className={styles.featureText}>
                 <h3>Find Community</h3>
                 <p>Connect with fellow adventurers</p>
               </div>
             </div>
             
-            <div className="feature">
-              <div className="feature-icon">🧗‍♀️</div>
-              <div className="feature-text">
+            <div className={styles.feature}>
+              <div className={styles.featureIcon}>🧗‍♀️</div>
+              <div className={styles.featureText}>
                 <h3>Shop Gear</h3>
                 <p>Get equipped for your journey</p>
               </div>
@@ -67,7 +80,7 @@ const Home = () => {
         </div>
       </main>
       
-      <footer className="home-footer">
+      <footer className={styles.homeFooter}>
         <p>© 2025 Iron Community • Explore • Connect • Conquer</p>
       </footer>
     </div>
