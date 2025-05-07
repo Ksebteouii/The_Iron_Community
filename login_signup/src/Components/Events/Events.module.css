@@ -1,0 +1,289 @@
+.eventPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+.eventContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.eventContent h1 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.eventCard {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.eventImage {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.eventImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.eventCard:hover .eventImage img {
+  transform: scale(1.05);
+}
+
+.eventIcon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.eventInfo {
+  padding: 1.5rem;
+}
+
+.eventInfo h2 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.eventInfo p {
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.eventFeatures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.featureTag {
+  background: #e8f4f8;
+  color: #2c3e50;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.joinButton {
+  width: 100%;
+  padding: 0.8rem;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.joinButton:hover {
+  background: #2980b9;
+}
+
+/* Event Detail Page Styles */
+.backButton {
+  background: none;
+  border: none;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.backButton:hover {
+  color: #3498db;
+}
+
+.eventDetail {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.eventDetail .eventImage {
+  height: 400px;
+}
+
+.eventDetail .eventInfo {
+  padding: 2rem;
+}
+
+.eventDetail h1 {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.eventMeta {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.eventMeta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.signedUpMessage {
+  text-align: center;
+  padding: 2rem;
+  background: #e8f4f8;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.signedUpMessage p {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.viewGroupButton {
+  background: #2c3e50;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.viewGroupButton:hover {
+  background: #34495e;
+}
+
+@media (max-width: 768px) {
+  .eventPage {
+    padding: 1rem;
+  }
+  
+  .eventContent h1 {
+    font-size: 2rem;
+  }
+  
+  .eventGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .eventDetail .eventImage {
+    height: 300px;
+  }
+  
+  .eventMeta {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.participantsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.participantCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.participantCard:hover {
+  transform: translateY(-3px);
+}
+
+.participantAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.participantInfo {
+  flex: 1;
+}
+
+.participantInfo h3 {
+  margin: 0;
+  color: #2E3B0E;
+  font-size: 1.1rem;
+}
+
+.participantInfo p {
+  margin: 0.2rem 0 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.noParticipants {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loadingSpinner {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #ff4444;
+  background: #ffeeee;
+  border-radius: 8px;
+  margin: 1rem 0;
+} 

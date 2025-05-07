@@ -1,0 +1,49 @@
+.centralPage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.heroSection {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3') center/cover;
+  color: white;
+}
+
+.heroSection h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.heroSection p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.eventsSection {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    padding: 3rem 1rem;
+  }
+
+  .heroSection h1 {
+    font-size: 2rem;
+  }
+
+  .heroSection p {
+    font-size: 1rem;
+  }
+
+  .eventsSection {
+    padding: 1rem;
+  }
+} 
