@@ -7,14 +7,39 @@ import datetime
 import random
 import string
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 
 auth_bp = Blueprint('auth', __name__)
 
 # In-memory token store for demo purposes (replace with persistent store in production)
 reset_tokens = {}
+tokens = {}  # Store for user tokens
 
 # Store verification codes temporarily (in production, use Redis or similar)
 verification_codes = {}
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        auth_header = request.headers.get('Authorization')
+        
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+        
+        if not token:
+            return jsonify({'error': 'Token is missing!'}), 401
+        
+        user_id = tokens.get(token)
+        if not user_id:
+            return jsonify({'error': 'Invalid token!'}), 401
+        
+        current_user = User.query.get(user_id)
+        if not current_user:
+            return jsonify({'error': 'User not found!'}), 401
+        
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 def generate_verification_code():
     """Generate a 6-digit verification code"""
@@ -78,6 +103,10 @@ def login():
         if not password_match:
             return jsonify({'error': 'Invalid email or password!'}), 401
 
+        # Generate token
+        token = secrets.token_hex(16)
+        tokens[token] = user.id
+
         user_data = {
             'id': user.id,
             'email': user.email,
@@ -85,7 +114,11 @@ def login():
         }
         print(f"Login successful response data: {user_data}")
 
-        return jsonify({'message': 'Login successful!', 'user': user_data}), 200
+        return jsonify({
+            'message': 'Login successful!', 
+            'user': user_data,
+            'token': token
+        }), 200
 
     except Exception as e:
         print("Login Error:", e)
@@ -185,3 +218,24 @@ def reset_password():
     del verification_codes[email]
     
     return jsonify({'message': 'Password reset successful'}), 200
+
+@auth_bp.route('/auth/verify-token', methods=['GET'])
+@token_required
+def verify_token(current_user):
+    return jsonify({
+        'user': {
+            'id': current_user.id,
+            'email': current_user.email,
+            'is_admin': current_user.is_administrator()
+        }
+    }), 200
+
+@auth_bp.route('/auth/verify', methods=['GET'])
+@token_required
+def verify(current_user):
+    user_data = {
+        'id': current_user.id,
+        'email': current_user.email,
+        'is_admin': getattr(current_user, 'is_admin', False)
+    }
+    return jsonify({'user': user_data}), 200

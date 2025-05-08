@@ -5,6 +5,7 @@ from auth import auth_bp
 from admin import admin_bp
 from messages import messages_bp
 from profile import profile_bp
+from events import events_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +23,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(messages_bp)
 app.register_blueprint(profile_bp)
+app.register_blueprint(events_bp)
 
 from cart import cart_bp
 app.register_blueprint(cart_bp)

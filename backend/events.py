@@ -1,20 +1,59 @@
 from flask import Blueprint, request, jsonify
 from models import db, User, Event
 from auth import token_required
+from datetime import datetime
 
 events_bp = Blueprint('events', __name__)
 
-@events_bp.route('/events/<event_type>/signup', methods=['POST'])
-@token_required
-def signup_for_event(current_user, event_type):
+@events_bp.route('/events', methods=['GET'])
+def get_all_events():
     try:
-        # Check if event exists
-        event = Event.query.filter_by(type=event_type).first()
-        if not event:
-            # Create event if it doesn't exist
-            event = Event(type=event_type)
-            db.session.add(event)
-            db.session.commit()
+        events = Event.query.all()
+        return jsonify({
+            'events': [{
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date': event.date.isoformat(),
+                'location': event.location,
+                'max_participants': event.max_participants,
+                'current_participants': len(event.participants),
+                'created_at': event.created_at.isoformat()
+            } for event in events]
+        }), 200
+    except Exception as e:
+        print(f"Error in get_all_events: {str(e)}")
+        return jsonify({'error': 'Failed to fetch events'}), 500
+
+@events_bp.route('/events/<int:event_id>', methods=['GET'])
+def get_event(event_id):
+    try:
+        event = Event.query.get_or_404(event_id)
+        return jsonify({
+            'event': {
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date': event.date.isoformat(),
+                'location': event.location,
+                'max_participants': event.max_participants,
+                'current_participants': len(event.participants),
+                'created_at': event.created_at.isoformat()
+            }
+        }), 200
+    except Exception as e:
+        print(f"Error in get_event: {str(e)}")
+        return jsonify({'error': 'Failed to fetch event'}), 500
+
+@events_bp.route('/events/<int:event_id>/signup', methods=['POST'])
+@token_required
+def signup_for_event(current_user, event_id):
+    try:
+        event = Event.query.get_or_404(event_id)
+        
+        # Check if event is full
+        if event.max_participants and len(event.participants) >= event.max_participants:
+            return jsonify({'error': 'Event is full'}), 400
 
         # Check if user is already signed up
         if current_user in event.participants:
@@ -25,11 +64,11 @@ def signup_for_event(current_user, event_type):
         db.session.commit()
 
         return jsonify({
-            'message': f'Successfully signed up for {event_type}',
+            'message': f'Successfully signed up for {event.title}',
             'event': {
                 'id': event.id,
-                'type': event.type,
-                'participants': [user.id for user in event.participants]
+                'title': event.title,
+                'current_participants': len(event.participants)
             }
         }), 200
 
@@ -37,14 +76,12 @@ def signup_for_event(current_user, event_type):
         print(f"Error in signup_for_event: {str(e)}")
         return jsonify({'error': 'Failed to sign up for event'}), 500
 
-@events_bp.route('/events/<event_type>/participants', methods=['GET'])
+@events_bp.route('/events/<int:event_id>/participants', methods=['GET'])
 @token_required
-def get_event_participants(current_user, event_type):
+def get_event_participants(current_user, event_id):
     try:
-        event = Event.query.filter_by(type=event_type).first()
-        if not event:
-            return jsonify({'error': 'Event not found'}), 404
-
+        event = Event.query.get_or_404(event_id)
+        
         participants = [{
             'id': user.id,
             'name': user.name,
@@ -55,11 +92,37 @@ def get_event_participants(current_user, event_type):
         return jsonify({
             'event': {
                 'id': event.id,
-                'type': event.type,
-                'participants': participants
+                'title': event.title,
+                'participants': participants,
+                'total_participants': len(participants)
             }
         }), 200
 
     except Exception as e:
         print(f"Error in get_event_participants: {str(e)}")
-        return jsonify({'error': 'Failed to get participants'}), 500 
+        return jsonify({'error': 'Failed to get participants'}), 500
+
+@events_bp.route('/events/<int:event_id>/cancel', methods=['POST'])
+@token_required
+def cancel_event_signup(current_user, event_id):
+    try:
+        event = Event.query.get_or_404(event_id)
+        
+        if current_user not in event.participants:
+            return jsonify({'error': 'Not signed up for this event'}), 400
+
+        event.participants.remove(current_user)
+        db.session.commit()
+
+        return jsonify({
+            'message': f'Successfully cancelled signup for {event.title}',
+            'event': {
+                'id': event.id,
+                'title': event.title,
+                'current_participants': len(event.participants)
+            }
+        }), 200
+
+    except Exception as e:
+        print(f"Error in cancel_event_signup: {str(e)}")
+        return jsonify({'error': 'Failed to cancel event signup'}), 500 

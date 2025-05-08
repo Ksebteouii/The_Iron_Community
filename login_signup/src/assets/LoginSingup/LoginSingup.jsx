@@ -92,10 +92,6 @@ const AuthForm = () => {
           if (!response.data.user) {
             throw new Error("User data missing in login response");
           }
-          // Store the token
-          if (response.data.token) {
-            localStorage.setItem('token', response.data.token);
-          }
           setUser(response.data.user);
           if (response.data.user.is_admin) {
             navigate("/admin");

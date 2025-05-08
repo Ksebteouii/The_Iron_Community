@@ -112,7 +112,7 @@ const EventDetail = () => {
                 <p>You're signed up for this event! 🎉</p>
                 <button 
                   className={styles.viewGroupButton}
-                  onClick={() => navigate(`/event/${id}/group`)}
+                  onClick={() => navigate(`/events/${id}/group`)}
                 >
                   View Event Group
                 </button>

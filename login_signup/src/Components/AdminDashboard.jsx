@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
 
@@ -6,46 +6,63 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [activeTab, setActiveTab] = useState('users'); // 'users', 'carts', or 'messages'
+  const [events, setEvents] = useState([]);
+  const [activeTab, setActiveTab] = useState('users'); // 'users', 'carts', or 'messages' or 'events'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchData();
+  const getAuthHeader = useCallback(() => {
+    const token = localStorage.getItem('token');
+    console.log('Token in localStorage:', token); // Debug log
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    return {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [usersRes, cartsRes, messagesRes] = await Promise.all([
-        axios.get('http://localhost:5000/admin/users', {
-          headers: { 'X-Admin': 'true' }
-        }),
-        axios.get('http://localhost:5000/admin/carts', {
-          headers: { 'X-Admin': 'true' }
-        }),
-        axios.get('http://localhost:5000/admin/contact-messages', {
-          headers: { 'X-Admin': 'true' }
-        })
+      const headers = getAuthHeader();
+      const [usersRes, cartsRes, messagesRes, eventsRes] = await Promise.all([
+        axios.get('http://localhost:5000/admin/users', { headers }),
+        axios.get('http://localhost:5000/admin/carts', { headers }),
+        axios.get('http://localhost:5000/admin/contact-messages', { headers }),
+        axios.get('http://localhost:5000/admin/events', { headers })
       ]);
       setUsers(usersRes.data);
       setCarts(cartsRes.data);
       setMessages(messagesRes.data);
+      setEvents(eventsRes.data.events);
     } catch (error) {
       console.error('Fetch error:', error);
-      setError(error.response?.data?.error || 'Failed to fetch data');
+      if (error.message === 'No authentication token found') {
+        setError('Please log in to access the admin dashboard');
+      } else if (error.response?.status === 401) {
+        setError('Your session has expired. Please log in again.');
+        localStorage.removeItem('token');
+      } else {
+        setError(error.response?.data?.error || 'Failed to fetch data');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAuthHeader]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleDeleteUser = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
     
     try {
       await axios.delete(`http://localhost:5000/admin/users/${userId}`, {
-        headers: { 'X-Admin': 'true' }
+        headers: getAuthHeader()
       });
       // Refresh the data after successful deletion
       fetchData();
@@ -58,11 +75,23 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this cart?')) return;
     try {
       await axios.delete(`http://localhost:5000/admin/carts/${cart_id}`, {
-        headers: { 'X-Admin': 'true' }
+        headers: getAuthHeader()
       });
       fetchData();
     } catch (error) {
       alert('Failed to delete cart: ' + error.response?.data?.error || error.message);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    if (!window.confirm('Are you sure you want to delete this event?')) return;
+    try {
+      await axios.delete(`http://localhost:5000/admin/events/${eventId}`, {
+        headers: getAuthHeader()
+      });
+      fetchData();
+    } catch (error) {
+      alert('Failed to delete event: ' + error.response?.data?.error || error.message);
     }
   };
 
@@ -96,6 +125,12 @@ const AdminDashboard = () => {
           onClick={() => setActiveTab('messages')}
         >
           Messages
+        </button>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'events' ? styles.active : ''}`}
+          onClick={() => setActiveTab('events')}
+        >
+          Events
         </button>
       </div>
 
@@ -238,6 +273,46 @@ const AdminDashboard = () => {
                   <td>{msg.email}</td>
                   <td>{msg.message}</td>
                   <td>{new Date(msg.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === 'events' && (
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Participants</th>
+                <th>Max Participants</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map(event => (
+                <tr key={event.id}>
+                  <td>{event.title}</td>
+                  <td>{event.description}</td>
+                  <td>{new Date(event.date).toLocaleDateString()}</td>
+                  <td>{event.location}</td>
+                  <td>{event.current_participants}</td>
+                  <td>{event.max_participants || '∞'}</td>
+                  <td>{new Date(event.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <button 
+                      onClick={() => handleDeleteEvent(event.id)}
+                      className={styles.deleteButton}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

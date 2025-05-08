@@ -1,22 +1,16 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from models import db, User, Profile, Cart, Message
+from models import db, User, Profile, Cart, Message, Event
 from functools import wraps
+from auth import token_required
 
 admin_bp = Blueprint('admin', __name__)
 
-def admin_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # For demo, check for admin header
-        if request.headers.get('X-Admin') != 'true':
-            return jsonify({'error': 'Admin access required'}), 403
-        return f(*args, **kwargs)
-    return decorated_function
-
 @admin_bp.route('/admin/users', methods=['GET'])
-@admin_required
-def get_all_users():
+@token_required
+def get_all_users(current_user):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     users = User.query.all()
     result = []
     for user in users:
@@ -39,8 +33,10 @@ def get_all_users():
     return jsonify(result), 200
 
 @admin_bp.route('/admin/carts', methods=['GET'])
-@admin_required
-def get_all_carts():
+@token_required
+def get_all_carts(current_user):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     carts = Cart.query.all()
     result = []
     for cart in carts:
@@ -62,8 +58,10 @@ def get_all_carts():
     return jsonify(result), 200
 
 @admin_bp.route('/admin/carts/<int:cart_id>', methods=['PUT'])
-@admin_required
-def edit_cart(cart_id):
+@token_required
+def edit_cart(current_user, cart_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     cart = Cart.query.get(cart_id)
     if not cart:
         return jsonify({'error': 'Cart not found'}), 404
@@ -76,8 +74,10 @@ def edit_cart(cart_id):
     return jsonify({'message': 'Cart updated successfully'}), 200
 
 @admin_bp.route('/admin/carts/<int:cart_id>', methods=['DELETE'])
-@admin_required
-def delete_cart(cart_id):
+@token_required
+def delete_cart(current_user, cart_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     cart = Cart.query.get(cart_id)
     if not cart:
         return jsonify({'error': 'Cart not found'}), 404
@@ -86,8 +86,10 @@ def delete_cart(cart_id):
     return jsonify({'message': 'Cart deleted successfully'}), 200
 
 @admin_bp.route('/admin/contact-messages', methods=['GET'])
-@admin_required
-def get_contact_messages():
+@token_required
+def get_contact_messages(current_user):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     messages = Message.query.all()
     return jsonify([{
         'id': msg.id,
@@ -98,8 +100,10 @@ def get_contact_messages():
     } for msg in messages]), 200
 
 @admin_bp.route('/admin/users/<int:user_id>', methods=['DELETE'])
-@admin_required
-def delete_user(user_id):
+@token_required
+def delete_user(current_user, user_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
     user = User.query.get(user_id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
@@ -119,3 +123,77 @@ def delete_user(user_id):
     db.session.commit()
     
     return jsonify({'message': 'User deleted successfully'}), 200
+
+@admin_bp.route('/admin/events', methods=['GET'])
+@token_required
+def get_all_events(current_user):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        events = Event.query.all()
+        return jsonify({
+            'events': [{
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date': event.date.isoformat(),
+                'location': event.location,
+                'max_participants': event.max_participants,
+                'current_participants': len(event.participants),
+                'created_at': event.created_at.isoformat()
+            } for event in events]
+        }), 200
+    except Exception as e:
+        print(f"Error in get_all_events: {str(e)}")
+        return jsonify({'error': 'Failed to fetch events'}), 500
+
+@admin_bp.route('/admin/events/<int:event_id>', methods=['DELETE'])
+@token_required
+def delete_event(current_user, event_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        event = Event.query.get_or_404(event_id)
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({'message': 'Event deleted successfully'}), 200
+    except Exception as e:
+        print(f"Error in delete_event: {str(e)}")
+        return jsonify({'error': 'Failed to delete event'}), 500
+
+@admin_bp.route('/admin/events', methods=['POST'])
+@token_required
+def create_event(current_user):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        data = request.get_json()
+        event = Event(
+            title=data['title'],
+            description=data['description'],
+            date=data['date'],
+            location=data['location'],
+            max_participants=data.get('max_participants')
+        )
+        db.session.add(event)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Event created successfully',
+            'event': {
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date': event.date.isoformat(),
+                'location': event.location,
+                'max_participants': event.max_participants,
+                'current_participants': 0,
+                'created_at': event.created_at.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        print(f"Error in create_event: {str(e)}")
+        return jsonify({'error': 'Failed to create event'}), 500

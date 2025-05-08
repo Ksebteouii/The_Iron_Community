@@ -1,13 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import styles from './Events.module.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { UserContext } from '../UserContext';
 
-const EventParticipants = ({ eventType }) => {
+const EventParticipants = () => {
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { eventId } = useParams();
+  const { user, loading: userLoading } = useContext(UserContext);
 
   useEffect(() => {
+    if (userLoading) return; // Wait for user context to finish loading
+    if (!user) {
+      navigate('/login');
+      return;
+    }
     const fetchParticipants = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -16,7 +26,7 @@ const EventParticipants = ({ eventType }) => {
         }
 
         const response = await axios.get(
-          `http://localhost:5000/events/${eventType}/participants`,
+          `http://localhost:5000/events/${eventId}/participants`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -25,7 +35,7 @@ const EventParticipants = ({ eventType }) => {
           }
         );
 
-        setParticipants(response.data.participants);
+        setParticipants(response.data.participants || response.data.event?.participants || []);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching participants:', error);
@@ -35,9 +45,9 @@ const EventParticipants = ({ eventType }) => {
     };
 
     fetchParticipants();
-  }, [eventType]);
+  }, [eventId, user, userLoading, navigate]);
 
-  if (loading) {
+  if (userLoading || loading) {
     return <div className={styles.loadingSpinner}>Loading participants...</div>;
   }
 
@@ -48,7 +58,7 @@ const EventParticipants = ({ eventType }) => {
   return (
     <div className={styles.eventPage}>
       <div className={styles.eventContent}>
-        <h1>{eventType.charAt(0).toUpperCase() + eventType.slice(1)} Event Participants</h1>
+        <h1>Event Participants</h1>
         <div className={styles.participantsList}>
           {participants.length === 0 ? (
             <p className={styles.noParticipants}>No participants yet</p>
