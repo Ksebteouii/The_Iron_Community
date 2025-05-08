@@ -50,7 +50,7 @@ const StorePage = () => {
               </p>
             </div>
             <div className="adventure-image">
-              <img src="/images/hero-gear.png" alt="Hiking Gear" className="floating-image" />
+              <img src="/images/hiking.png" alt="Hiking Gear" className="floating-image" />
             </div>
           </div>
 
@@ -65,7 +65,7 @@ const StorePage = () => {
               </p>
             </div>
             <div className="adventure-image">
-              <img src="/images/hero-gear.png" alt="Camping Gear" className="floating-image" />
+              <img src="/images/comping.png" alt="Camping Gear" className="floating-image" />
             </div>
           </div>
         </div>
