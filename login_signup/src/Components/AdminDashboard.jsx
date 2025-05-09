@@ -6,10 +6,39 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [events, setEvents] = useState([]);
+  const events = [
+    {
+      id: 1,
+      title: "Camping Adventure",
+      description: "Join us for an unforgettable camping experience in the wilderness. Learn survival skills, enjoy nature, and make new friends.",
+      image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3",
+      features: ["Tent Setup", "Campfire Cooking", "Nature Walks"],
+      icon: "🏕️"
+    },
+    {
+      id: 2,
+      title: "Hiking Expedition",
+      description: "Challenge yourself with our guided hiking expedition. Perfect for both beginners and experienced hikers.",
+      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3",
+      features: ["Scenic Trails", "Fitness Training", "Photography"],
+      icon: "🏃"
+    },
+    {
+      id: 3,
+      title: "Iron Community Challenge",
+      description: "Test your limits in our community fitness challenge. A perfect blend of strength, endurance, and teamwork.",
+      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3",
+      features: ["Team Building", "Fitness Goals", "Community Spirit"],
+      icon: "💪"
+    }
+  ];
   const [activeTab, setActiveTab] = useState('users'); // 'users', 'carts', or 'messages' or 'events'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showParticipantsModal, setShowParticipantsModal] = useState(false);
+  const [eventParticipants, setEventParticipants] = useState([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
 
   const getAuthHeader = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -28,16 +57,14 @@ const AdminDashboard = () => {
     setError(null);
     try {
       const headers = getAuthHeader();
-      const [usersRes, cartsRes, messagesRes, eventsRes] = await Promise.all([
+      const [usersRes, cartsRes, messagesRes] = await Promise.all([
         axios.get('http://localhost:5000/admin/users', { headers }),
         axios.get('http://localhost:5000/admin/carts', { headers }),
-        axios.get('http://localhost:5000/admin/contact-messages', { headers }),
-        axios.get('http://localhost:5000/admin/events', { headers })
+        axios.get('http://localhost:5000/admin/contact-messages', { headers })
       ]);
       setUsers(usersRes.data);
       setCarts(cartsRes.data);
       setMessages(messagesRes.data);
-      setEvents(eventsRes.data.events);
     } catch (error) {
       console.error('Fetch error:', error);
       if (error.message === 'No authentication token found') {
@@ -93,6 +120,27 @@ const AdminDashboard = () => {
     } catch (error) {
       alert('Failed to delete event: ' + error.response?.data?.error || error.message);
     }
+  };
+
+  const handleViewParticipants = async (eventId) => {
+    setLoadingParticipants(true);
+    try {
+      const headers = getAuthHeader();
+      const response = await axios.get(`http://localhost:5000/events/${eventId}/participants`, { headers });
+      setEventParticipants(response.data.event.participants);
+      setSelectedEvent(events.find(e => e.id === eventId));
+      setShowParticipantsModal(true);
+    } catch (error) {
+      alert('Failed to fetch participants: ' + error.response?.data?.error || error.message);
+    } finally {
+      setLoadingParticipants(false);
+    }
+  };
+
+  const closeParticipantsModal = () => {
+    setShowParticipantsModal(false);
+    setSelectedEvent(null);
+    setEventParticipants([]);
   };
 
   if (loading) {
@@ -281,42 +329,82 @@ const AdminDashboard = () => {
       )}
 
       {activeTab === 'events' && (
-        <div className={styles.tableContainer}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Date</th>
-                <th>Location</th>
-                <th>Participants</th>
-                <th>Max Participants</th>
-                <th>Created At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events.map(event => (
-                <tr key={event.id}>
-                  <td>{event.title}</td>
-                  <td>{event.description}</td>
-                  <td>{new Date(event.date).toLocaleDateString()}</td>
-                  <td>{event.location}</td>
-                  <td>{event.current_participants}</td>
-                  <td>{event.max_participants || '∞'}</td>
-                  <td>{new Date(event.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <button 
-                      onClick={() => handleDeleteEvent(event.id)}
-                      className={styles.deleteButton}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+        <div className={styles.eventPage}>
+          <div className={styles.eventContent}>
+            <h1>Manage Events</h1>
+            <div className={styles.eventGrid}>
+              {events.map((event) => (
+                <div key={event.id} className={styles.eventCard}>
+                  <div className={styles.eventImage}>
+                    <img src={event.image} alt={event.title} />
+                    <div className={styles.eventIcon}>{event.icon}</div>
+                  </div>
+                  <div className={styles.eventInfo}>
+                    <h2>{event.title}</h2>
+                    <p>{event.description}</p>
+                    <div className={styles.eventFeatures}>
+                      {event.features.map((feature, index) => (
+                        <span key={index} className={styles.featureTag}>{feature}</span>
+                      ))}
+                    </div>
+                    <div className={styles.adminActions}>
+                      <button 
+                        onClick={() => handleViewParticipants(event.id)}
+                        className={styles.viewButton}
+                      >
+                        View Participants
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteEvent(event.id)}
+                        className={styles.deleteButton}
+                      >
+                        Delete Event
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Participants Modal */}
+      {showParticipantsModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h2>Participants for {selectedEvent?.title}</h2>
+              <button onClick={closeParticipantsModal} className={styles.closeButton}>×</button>
+            </div>
+            <div className={styles.modalContent}>
+              {loadingParticipants ? (
+                <div className={styles.loadingSpinner}><div className={styles.spinner}></div></div>
+              ) : eventParticipants.length === 0 ? (
+                <p className={styles.noParticipants}>No participants yet</p>
+              ) : (
+                <div className={styles.participantsList}>
+                  {eventParticipants.map((participant) => (
+                    <div key={participant.id} className={styles.participantCard}>
+                      <img
+                        src={participant.profile_picture || 'https://via.placeholder.com/50'}
+                        alt={participant.name}
+                        className={styles.participantAvatar}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/50';
+                        }}
+                      />
+                      <div className={styles.participantInfo}>
+                        <h3>{participant.name}</h3>
+                        <p>{participant.email}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
