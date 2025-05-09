@@ -18,7 +18,7 @@ const EventDetail = () => {
         image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3",
         features: ["Tent Setup", "Campfire Cooking", "Nature Walks"],
         icon: "🏕️",
-        date: "June 15-17, 2024",
+        date: "June 15-17, 2025",
         location: "Mountain View Campground",
         maxParticipants: 20,
         currentParticipants: 12
@@ -30,7 +30,7 @@ const EventDetail = () => {
         image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3",
         features: ["Scenic Trails", "Fitness Training", "Photography"],
         icon: "🏃",
-        date: "July 1-3, 2024",
+        date: "July 1-3, 2025",
         location: "Eagle Peak Trail",
         maxParticipants: 15,
         currentParticipants: 8
@@ -42,7 +42,7 @@ const EventDetail = () => {
         image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3",
         features: ["Team Building", "Fitness Goals", "Community Spirit"],
         icon: "💪",
-        date: "August 5-7, 2024",
+        date: "August 5-7, 2025",
         location: "Community Center",
         maxParticipants: 30,
         currentParticipants: 18

@@ -7,7 +7,7 @@ import Home from "./Components/Home/Home";
 import ForgotPassword from "./Components/ForgotPassword/ForgotPassword";
 import StorePage from "./Components/StorePage";
 import CartPage from "./Components/CartPage";
-import AdminDashboard from "./Components/AdminDashboard";
+import AdminDashboard from "./Components/AdminDashboard.jsx";
 import ContactUs from "./Components/ContactUs/ContactUs";
 import AboutUs from "./Components/AboutUs/AboutUs";
 import Profile from './Components/Profile/Profile';
