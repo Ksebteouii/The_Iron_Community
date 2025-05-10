@@ -10,22 +10,22 @@ def migrate():
         # Create some sample events
         events = [
             Event(
-                title="Mountain Hiking Adventure",
-                description="Join us for an exciting mountain hiking adventure! Experience breathtaking views and connect with nature enthusiasts.",
+                title="Camping Adventure",
+                description="Join us for an unforgettable camping experience in the wilderness. Learn survival skills, enjoy nature, and make new friends.",
                 date=datetime(2024, 5, 15, 9, 0),
                 location="Mount Washington Trail",
                 max_participants=20
             ),
             Event(
-                title="Beach Cleanup Day",
-                description="Help us keep our beaches clean! Join this community event to collect trash and protect marine life.",
+                title="Hiking Expedition",
+                description="Challenge yourself with our guided hiking expedition. Perfect for both beginners and experienced hikers.",
                 date=datetime(2024, 5, 20, 10, 0),
                 location="Sunset Beach",
                 max_participants=50
             ),
             Event(
-                title="Forest Conservation Workshop",
-                description="Learn about forest conservation and sustainable practices. Perfect for nature lovers and environmentalists.",
+                title="Iron Community Challenge",
+                description="Test your limits in our community fitness challenge. A perfect blend of strength, endurance, and teamwork.",
                 date=datetime(2024, 6, 1, 14, 0),
                 location="Green Valley Forest Center",
                 max_participants=30

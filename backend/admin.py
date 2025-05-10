@@ -3,6 +3,7 @@ from flask_cors import cross_origin
 from models import db, User, Profile, Cart, Message, Event
 from functools import wraps
 from auth import token_required
+from datetime import datetime
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -197,3 +198,43 @@ def create_event(current_user):
     except Exception as e:
         print(f"Error in create_event: {str(e)}")
         return jsonify({'error': 'Failed to create event'}), 500
+
+@admin_bp.route('/admin/events/<int:event_id>', methods=['PUT'])
+@token_required
+def update_event(current_user, event_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    try:
+        event = Event.query.get_or_404(event_id)
+        data = request.get_json()
+        
+        if 'title' in data:
+            event.title = data['title']
+        if 'description' in data:
+            event.description = data['description']
+        if 'date' in data:
+            event.date = datetime.fromisoformat(data['date'])
+        if 'location' in data:
+            event.location = data['location']
+        if 'max_participants' in data:
+            event.max_participants = data['max_participants']
+            
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Event updated successfully',
+            'event': {
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date': event.date.isoformat(),
+                'location': event.location,
+                'max_participants': event.max_participants,
+                'current_participants': len(event.participants),
+                'created_at': event.created_at.isoformat()
+            }
+        }), 200
+    except Exception as e:
+        print(f"Error in update_event: {str(e)}")
+        return jsonify({'error': 'Failed to update event'}), 500

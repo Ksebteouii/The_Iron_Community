@@ -38,9 +38,9 @@ const Events = () => {
 
   const getEventImage = (title) => {
     const images = {
-      'Hiking Expedition': 'https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?ixlib=rb-4.0.3',
-      'Iron Community Challenge': 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3',
-      'Camping Adventure': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3'
+      'Hiking Expedition': 'https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3',
+      'Iron Community Challenge': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3',
+      'Camping Adventure': 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3'
     };
     return images[title] || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3';
   };
