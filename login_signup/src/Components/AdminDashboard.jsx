@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
 
+const DEFAULT_PROFILE_IMAGE = 'https://placehold.co/50x50?text=User';
+const DEFAULT_ITEM_IMAGE = 'https://placehold.co/100x100?text=Item';
+
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
@@ -204,12 +207,12 @@ const AdminDashboard = () => {
                 <tr key={user.id}>
                   <td>
                     <img 
-                      src={user.profile?.profile_picture || 'https://via.placeholder.com/50'} 
+                      src={user.profile?.profile_picture || DEFAULT_PROFILE_IMAGE} 
                       alt={user.name}
                       className={styles.profilePicture}
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/50';
+                        e.target.src = DEFAULT_PROFILE_IMAGE;
                       }}
                     />
                   </td>
@@ -255,12 +258,12 @@ const AdminDashboard = () => {
                   <td>
                     <div className={styles.userInfo}>
                       <img 
-                        src={cart.profile?.profile_picture || 'https://via.placeholder.com/30'} 
+                        src={cart.profile?.profile_picture || DEFAULT_PROFILE_IMAGE} 
                         alt={cart.user_name}
                         className={styles.userAvatar}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/30';
+                          e.target.src = DEFAULT_PROFILE_IMAGE;
                         }}
                       />
                       <div>
@@ -277,7 +280,15 @@ const AdminDashboard = () => {
                           <ul className={styles.itemList}>
                             {items.map((item, index) => (
                               <li key={index} className={styles.itemRow}>
-                                <img src={item.image} alt={item.name} className={styles.itemImage} />
+                                <img 
+                                  src={item.image || DEFAULT_ITEM_IMAGE} 
+                                  alt={item.name} 
+                                  className={styles.itemImage}
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = DEFAULT_ITEM_IMAGE;
+                                  }}
+                                />
                                 <span className={styles.itemName}>{item.name}</span>
                                 <span className={styles.itemQuantity}>(Qty: {item.quantity})</span>
                               </li>
@@ -388,12 +399,12 @@ const AdminDashboard = () => {
                   {eventParticipants.map((participant) => (
                     <div key={participant.id} className={styles.participantCard}>
                       <img
-                        src={participant.profile_picture || 'https://via.placeholder.com/50'}
+                        src={participant.profile_picture || DEFAULT_PROFILE_IMAGE}
                         alt={participant.name}
                         className={styles.participantAvatar}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/50';
+                          e.target.src = DEFAULT_PROFILE_IMAGE;
                         }}
                       />
                       <div className={styles.participantInfo}>
