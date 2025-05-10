@@ -6,7 +6,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
   const [messages, setMessages] = useState([]);
-  const events = [
+  // eslint-disable-next-line no-unused-vars
+  const [events, setEvents] = useState([
     {
       id: 1,
       title: "Camping Adventure",
@@ -31,7 +32,7 @@ const AdminDashboard = () => {
       features: ["Team Building", "Fitness Goals", "Community Spirit"],
       icon: "💪"
     }
-  ];
+  ]);
   const [activeTab, setActiveTab] = useState('users'); // 'users', 'carts', or 'messages' or 'events'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
