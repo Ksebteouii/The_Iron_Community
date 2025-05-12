@@ -220,7 +220,7 @@ const AdminDashboard = () => {
               {carts.map(cart => (
                 <tr key={cart.id}>
                   <td>{cart.id}</td>
-                  <td>{cart.user?.email || 'Unknown User'}</td>
+                  <td>{cart.user_name ? `${cart.user_name} (${cart.user_email})` : 'Unknown User'}</td>
                   <td>
                     {cart.items ? (
                       <div className={styles.cartItems}>
