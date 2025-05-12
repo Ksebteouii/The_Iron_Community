@@ -211,26 +211,40 @@ const AdminDashboard = () => {
             <thead>
               <tr>
                 <th>Cart ID</th>
-                <th>User</th>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Email</th>
                 <th>Items</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {carts.map(cart => (
-                <tr key={cart.id}>
-                  <td>{cart.id}</td>
-                  <td>{cart.user_name ? `${cart.user_name} (${cart.user_email})` : 'Unknown User'}</td>
+                <tr key={cart.cart_id}>
+                  <td>{cart.cart_id}</td>
+                  <td>
+                    <img
+                      src={cart.profile?.profile_picture || DEFAULT_PROFILE_IMAGE}
+                      alt={cart.user_name || 'User'}
+                      className={styles.profilePicture}
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = DEFAULT_PROFILE_IMAGE;
+                      }}
+                    />
+                  </td>
+                  <td>{cart.user_name || 'Unknown User'}</td>
+                  <td>{cart.user_email || 'Unknown Email'}</td>
                   <td>
                     {cart.items ? (
                       <div className={styles.cartItems}>
                         {JSON.parse(cart.items).map((item, index) => (
                           <div key={index} className={styles.cartItem}>
-                            <img 
-                              src={item.image || DEFAULT_ITEM_IMAGE} 
+                            <img
+                              src={item.image || DEFAULT_ITEM_IMAGE}
                               alt={item.name}
                               className={styles.itemImage}
-                              onError={(e) => {
+                              onError={e => {
                                 e.target.onerror = null;
                                 e.target.src = DEFAULT_ITEM_IMAGE;
                               }}
@@ -242,8 +256,8 @@ const AdminDashboard = () => {
                     ) : 'No items'}
                   </td>
                   <td>
-                    <button 
-                      onClick={() => handleDeleteCart(cart.id)}
+                    <button
+                      onClick={() => handleDeleteCart(cart.cart_id)}
                       className={styles.deleteButton}
                     >
                       Delete
