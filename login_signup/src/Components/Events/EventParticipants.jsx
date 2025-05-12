@@ -66,12 +66,12 @@ const EventParticipants = () => {
             participants.map((participant) => (
               <div key={participant.id} className={styles.participantCard}>
                 <img
-                  src={participant.profile?.profile_picture || 'https://via.placeholder.com/50'}
-                  alt={participant.name}
+                  src={participant.profile?.profile_picture ? participant.profile.profile_picture : '/images/default-avatar.png'}
+                  alt={participant.profile?.name || participant.name}
                   className={styles.participantAvatar}
-                  onError={(e) => {
+                  onError={e => {
                     e.target.onerror = null;
-                    e.target.src = 'https://via.placeholder.com/50';
+                    e.target.src = '/images/default-avatar.png';
                   }}
                 />
                 <div className={styles.participantInfo}>

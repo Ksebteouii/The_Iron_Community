@@ -97,6 +97,7 @@ def get_contact_messages(current_user):
         'name': msg.name,
         'email': msg.email,
         'message': msg.message,
+        'admin_reply': msg.admin_reply,
         'created_at': msg.created_at.isoformat() if msg.created_at else None
     } for msg in messages]), 200
 
@@ -238,3 +239,16 @@ def update_event(current_user, event_id):
     except Exception as e:
         print(f"Error in update_event: {str(e)}")
         return jsonify({'error': 'Failed to update event'}), 500
+
+@admin_bp.route('/admin/events/<int:event_id>/participants/<int:user_id>', methods=['DELETE'])
+@token_required
+def remove_event_participant(current_user, event_id, user_id):
+    if not current_user.is_administrator():
+        return jsonify({'error': 'Admin access required'}), 403
+    event = Event.query.get_or_404(event_id)
+    user = User.query.get_or_404(user_id)
+    if user not in event.participants:
+        return jsonify({'error': 'User not a participant'}), 400
+    event.participants.remove(user)
+    db.session.commit()
+    return jsonify({'message': 'User removed from event'}), 200

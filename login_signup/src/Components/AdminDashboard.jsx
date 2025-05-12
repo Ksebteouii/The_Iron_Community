@@ -291,7 +291,7 @@ const AdminDashboard = () => {
                   <td>{message.message}</td>
                   <td>
                     {message.admin_reply ? (
-                      <div className={styles.replyText}>{message.admin_reply}</div>
+                      <div className={styles.replyText}>Done</div>
                     ) : (
                       <div className={styles.noReply}>No reply yet</div>
                     )}

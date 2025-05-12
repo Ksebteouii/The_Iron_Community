@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from models import db, User, Profile
-from utils import hash_password, check_password, is_valid_email, is_strong_password
+from utils import is_valid_email, is_strong_password
 import secrets
 import datetime
 import random
@@ -69,7 +69,7 @@ def signup():
         if User.query.filter_by(email=email).first():
             return jsonify({'error': 'Email already exists!'}), 400
 
-        hashed_password = hash_password(password)
+        hashed_password = generate_password_hash(password)
         new_user = User(name=name, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -97,7 +97,7 @@ def login():
 
         # Debugging: print hashed password and check result
         print(f"Stored hashed password: {user.password}")
-        password_match = check_password(user.password, password)
+        password_match = check_password_hash(user.password, password)
         print(f"Password match result: {password_match}")
 
         if not password_match:
@@ -189,34 +189,22 @@ def verify_reset_code():
 def reset_password():
     data = request.get_json()
     email = data.get('email')
-    reset_token = data.get('reset_token')
     new_password = data.get('new_password')
-    
-    if not all([email, reset_token, new_password]):
+
+    if not email or not new_password:
         return jsonify({'error': 'All fields are required'}), 400
-    
+
     if not is_strong_password(new_password):
         return jsonify({'error': 'Password must be at least 8 characters and include uppercase, lowercase, digit, and special character'}), 400
-    
-    stored_data = verification_codes.get(email)
-    if not stored_data or stored_data['token'] != reset_token:
-        return jsonify({'error': 'Invalid or expired reset token'}), 400
-    
-    if datetime.datetime.utcnow() > stored_data['expires']:
-        del verification_codes[email]
-        return jsonify({'error': 'Reset token has expired'}), 400
-    
+
     user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'error': 'User not found'}), 404
-    
+
     # Update password
     user.password = generate_password_hash(new_password)
     db.session.commit()
-    
-    # Clean up verification data
-    del verification_codes[email]
-    
+
     return jsonify({'message': 'Password reset successful'}), 200
 
 @auth_bp.route('/auth/verify-token', methods=['GET'])

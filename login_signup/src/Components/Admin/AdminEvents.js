@@ -16,6 +16,11 @@ const AdminEvents = () => {
     max_participants: '',
     status: 'active'
   });
+  const [showParticipantsModal, setShowParticipantsModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [participants, setParticipants] = useState([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const [participantsError, setParticipantsError] = useState(null);
 
   useEffect(() => {
     fetchEvents();
@@ -90,6 +95,45 @@ const AdminEvents = () => {
       'Camping Adventure': 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3'
     };
     return images[title] || 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3';
+  };
+
+  const handleViewParticipants = async (event) => {
+    setSelectedEvent(event);
+    setShowParticipantsModal(true);
+    setLoadingParticipants(true);
+    setParticipantsError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:5000/events/${event.id}/participants`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setParticipants(response.data.event.participants);
+    } catch (error) {
+      setParticipantsError('Failed to load participants.');
+    } finally {
+      setLoadingParticipants(false);
+    }
+  };
+
+  const handleRemoveParticipant = async (eventId, userId) => {
+    if (!window.confirm('Are you sure you want to remove this participant?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:5000/admin/events/${eventId}/participants/${userId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      // Refresh participants list
+      handleViewParticipants(selectedEvent);
+    } catch (error) {
+      alert('Failed to remove participant.');
+    }
+  };
+
+  const closeParticipantsModal = () => {
+    setShowParticipantsModal(false);
+    setSelectedEvent(null);
+    setParticipants([]);
+    setParticipantsError(null);
   };
 
   if (loading) return <div className={styles.loading}>Loading...</div>;
@@ -222,9 +266,61 @@ const AdminEvents = () => {
             >
               Edit Event
             </button>
+            <button
+              className={styles.viewButton}
+              onClick={() => handleViewParticipants(event)}
+            >
+              View Participants
+            </button>
           </div>
         ))}
       </div>
+      {/* Participants Modal */}
+      {showParticipantsModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h2>Participants for {selectedEvent?.title}</h2>
+              <button onClick={closeParticipantsModal} className={styles.closeButton}>×</button>
+            </div>
+            <div className={styles.modalContent}>
+              {loadingParticipants ? (
+                <div className={styles.loadingSpinner}><div className={styles.spinner}></div></div>
+              ) : participantsError ? (
+                <p className={styles.error}>{participantsError}</p>
+              ) : participants.length === 0 ? (
+                <p className={styles.noParticipants}>No participants yet</p>
+              ) : (
+                <div className={styles.participantsList}>
+                  {participants.map((participant) => (
+                    <div key={participant.id} className={styles.participantCard}>
+                      <img
+                        src={participant.profile_picture || '/images/default-avatar.png'}
+                        alt={participant.name}
+                        className={styles.participantAvatar}
+                        onError={e => {
+                          e.target.onerror = null;
+                          e.target.src = '/images/default-avatar.png';
+                        }}
+                      />
+                      <span className={styles.participantName}>{participant.name}</span>
+                      <div className={styles.participantInfo}>
+                        <p>{participant.email}</p>
+                      </div>
+                      <button
+                        className={styles.removeButton}
+                        onClick={() => handleRemoveParticipant(selectedEvent.id, participant.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

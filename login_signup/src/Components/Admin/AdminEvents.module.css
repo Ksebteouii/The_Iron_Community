@@ -136,4 +136,21 @@
 
 .editButton:hover {
   background-color: #0056b3;
+}
+
+.participantAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  margin-right: 12px;
+  background: #f5f5f5;
+}
+
+.participantName {
+  display: inline-block;
+  margin-left: 8px;
+  font-weight: bold;
+  color: #333;
 } 
