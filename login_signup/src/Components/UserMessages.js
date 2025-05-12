@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './UserMessages.module.css';
+import { useUser } from '../Components/UserContext';
 
 const UserMessages = () => {
+  const { user } = useUser();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +34,6 @@ const UserMessages = () => {
     }
   };
 
-  const getGravatarUrl = (email) => {
-    if (!email) {
-      return 'https://www.gravatar.com/avatar/default?d=identicon&s=50';
-    }
-    const hash = email.trim().toLowerCase();
-    return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=50`;
-  };
-
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -54,29 +48,25 @@ const UserMessages = () => {
 
   return (
     <div className={styles.messagesContainer}>
-      <h2>My Messages</h2>
-      {messages.length === 0 ? (
-        <div className={styles.noMessages}>
-          <p>You haven't sent any messages yet.</p>
-        </div>
+      <h2 className={styles.title}>My Messages</h2>
+      {loading ? (
+        <div className={styles.loading}>Loading...</div>
+      ) : error ? (
+        <div className={styles.error}>{error}</div>
+      ) : messages.length === 0 ? (
+        <div className={styles.noMessages}>No messages found.</div>
       ) : (
         <div className={styles.messagesList}>
           {messages.map(message => (
             <div key={message.id} className={styles.messageCard}>
               <div className={styles.messageHeader}>
-                <div className={styles.userInfo}>
-                  <img 
-                    src={getGravatarUrl(message.user_email)} 
-                    alt="Profile" 
-                    className={styles.profilePicture}
-                  />
-                  <span className={styles.userName}>
-                    {message.user_name || 'User'}
-                  </span>
-                </div>
-                <span className={styles.messageDate}>
-                  {new Date(message.created_at).toLocaleDateString()}
-                </span>
+                <img
+                  src={user?.profile_picture || 'https://via.placeholder.com/64'}
+                  alt={user?.name || 'User'}
+                  className={styles.profileAvatar}
+                />
+                <span className={styles.userName}>{message.user_name || user?.name || 'User'}</span>
+                <span className={styles.messageDate}>{new Date(message.created_at).toLocaleDateString()}</span>
                 <span className={`${styles.messageStatus} ${message.admin_reply ? styles.replied : styles.pending}`}>
                   {message.admin_reply ? 'Replied' : 'Pending'}
                 </span>
@@ -99,4 +89,4 @@ const UserMessages = () => {
   );
 };
 
-export default UserMessages; 
+export default UserMessages;

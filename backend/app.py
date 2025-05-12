@@ -21,7 +21,7 @@ with app.app_context():
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(messages_bp)
+app.register_blueprint(messages_bp, url_prefix='/api')
 app.register_blueprint(profile_bp)
 app.register_blueprint(events_bp)
 
