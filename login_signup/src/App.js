@@ -16,6 +16,7 @@ import Central from './Components/Central/Central';
 import Events from './Components/Events/Events';
 import EventDetail from './Components/Events/EventDetail';
 import EventParticipants from './Components/Events/EventParticipants';
+import UserMessages from './Components/UserMessages';
 
 // Create a wrapper component to handle NavBar visibility
 const AppContent = () => {
@@ -42,6 +43,7 @@ const AppContent = () => {
           <Route path="/events" element={<Events />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/events/:eventId/group" element={<EventParticipants />} />
+          <Route path="/messages" element={<UserMessages />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>

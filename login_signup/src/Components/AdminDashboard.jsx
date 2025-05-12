@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
+import AdminEvents from './Admin/AdminEvents';
 
 const DEFAULT_PROFILE_IMAGE = 'https://placehold.co/50x50?text=User';
 const DEFAULT_ITEM_IMAGE = 'https://placehold.co/100x100?text=Item';
@@ -9,44 +10,14 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
   const [messages, setMessages] = useState([]);
-  // eslint-disable-next-line no-unused-vars
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Camping Adventure",
-      description: "Join us for an unforgettable camping experience in the wilderness. Learn survival skills, enjoy nature, and make new friends.",
-      image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3",
-      features: ["Tent Setup", "Campfire Cooking", "Nature Walks"],
-      icon: "🏕️"
-    },
-    {
-      id: 2,
-      title: "Hiking Expedition",
-      description: "Challenge yourself with our guided hiking expedition. Perfect for both beginners and experienced hikers.",
-      image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3",
-      features: ["Scenic Trails", "Fitness Training", "Photography"],
-      icon: "🏃"
-    },
-    {
-      id: 3,
-      title: "Iron Community Challenge",
-      description: "Test your limits in our community fitness challenge. A perfect blend of strength, endurance, and teamwork.",
-      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3",
-      features: ["Team Building", "Fitness Goals", "Community Spirit"],
-      icon: "💪"
-    }
-  ]);
-  const [activeTab, setActiveTab] = useState('users'); // 'users', 'carts', or 'messages' or 'events'
+  const [activeTab, setActiveTab] = useState('users');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [showParticipantsModal, setShowParticipantsModal] = useState(false);
-  const [eventParticipants, setEventParticipants] = useState([]);
-  const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   const getAuthHeader = useCallback(() => {
     const token = localStorage.getItem('token');
-    console.log('Token in localStorage:', token); // Debug log
     if (!token) {
       throw new Error('No authentication token found');
     }
@@ -95,7 +66,6 @@ const AdminDashboard = () => {
       await axios.delete(`http://localhost:5000/admin/users/${userId}`, {
         headers: getAuthHeader()
       });
-      // Refresh the data after successful deletion
       fetchData();
     } catch (error) {
       alert('Failed to delete user: ' + error.response?.data?.error || error.message);
@@ -114,37 +84,32 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDeleteEvent = async (eventId) => {
-    if (!window.confirm('Are you sure you want to delete this event?')) return;
-    try {
-      await axios.delete(`http://localhost:5000/admin/events/${eventId}`, {
-        headers: getAuthHeader()
-      });
-      fetchData();
-    } catch (error) {
-      alert('Failed to delete event: ' + error.response?.data?.error || error.message);
-    }
+  const handleReplyClick = (message) => {
+    setSelectedMessage(message);
+    setReplyText(message.admin_reply || '');
   };
 
-  const handleViewParticipants = async (eventId) => {
-    setLoadingParticipants(true);
+  const handleReplySubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedMessage) return;
+
     try {
       const headers = getAuthHeader();
-      const response = await axios.get(`http://localhost:5000/events/${eventId}/participants`, { headers });
-      setEventParticipants(response.data.event.participants);
-      setSelectedEvent(events.find(e => e.id === eventId));
-      setShowParticipantsModal(true);
+      const response = await axios.post(`http://localhost:5000/api/admin/contact-messages/${selectedMessage.id}/reply`, {
+        reply: replyText
+      }, { headers });
+      
+      if (response.data.message === 'Reply saved successfully') {
+        fetchData();
+        setSelectedMessage(null);
+        setReplyText('');
+      } else {
+        throw new Error(response.data.error || 'Failed to send reply');
+      }
     } catch (error) {
-      alert('Failed to fetch participants: ' + error.response?.data?.error || error.message);
-    } finally {
-      setLoadingParticipants(false);
+      console.error('Reply error:', error);
+      alert('Failed to send reply: ' + (error.response?.data?.error || error.message));
     }
-  };
-
-  const closeParticipantsModal = () => {
-    setShowParticipantsModal(false);
-    setSelectedEvent(null);
-    setEventParticipants([]);
   };
 
   if (loading) {
@@ -253,56 +218,32 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {carts.map(cart => (
-                <tr key={cart.cart_id}>
-                  <td>{cart.cart_id}</td>
+                <tr key={cart.id}>
+                  <td>{cart.id}</td>
+                  <td>{cart.user?.email || 'Unknown User'}</td>
                   <td>
-                    <div className={styles.userInfo}>
-                      <img 
-                        src={cart.profile?.profile_picture || DEFAULT_PROFILE_IMAGE} 
-                        alt={cart.user_name}
-                        className={styles.userAvatar}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = DEFAULT_PROFILE_IMAGE;
-                        }}
-                      />
-                      <div>
-                        <div>{cart.user_name}</div>
-                        <div className={styles.userEmail}>{cart.user_email}</div>
+                    {cart.items ? (
+                      <div className={styles.cartItems}>
+                        {JSON.parse(cart.items).map((item, index) => (
+                          <div key={index} className={styles.cartItem}>
+                            <img 
+                              src={item.image || DEFAULT_ITEM_IMAGE} 
+                              alt={item.name}
+                              className={styles.itemImage}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = DEFAULT_ITEM_IMAGE;
+                              }}
+                            />
+                            <span>{item.name} (${item.price})</span>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  </td>
-                  <td>
-                    {(() => {
-                      try {
-                        const items = JSON.parse(cart.items);
-                        return (
-                          <ul className={styles.itemList}>
-                            {items.map((item, index) => (
-                              <li key={index} className={styles.itemRow}>
-                                <img 
-                                  src={item.image || DEFAULT_ITEM_IMAGE} 
-                                  alt={item.name} 
-                                  className={styles.itemImage}
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = DEFAULT_ITEM_IMAGE;
-                                  }}
-                                />
-                                <span className={styles.itemName}>{item.name}</span>
-                                <span className={styles.itemQuantity}>(Qty: {item.quantity})</span>
-                              </li>
-                            ))}
-                          </ul>
-                        );
-                      } catch (e) {
-                        return <pre>{cart.items}</pre>;
-                      }
-                    })()}
+                    ) : 'No items'}
                   </td>
                   <td>
                     <button 
-                      onClick={() => handleDeleteCart(cart.cart_id)}
+                      onClick={() => handleDeleteCart(cart.id)}
                       className={styles.deleteButton}
                     >
                       Delete
@@ -323,101 +264,83 @@ const AdminDashboard = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Message</th>
-                <th>Date</th>
+                <th>Admin Reply</th>
+                <th>Created At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {messages.map(msg => (
-                <tr key={msg.id}>
-                  <td>{msg.name}</td>
-                  <td>{msg.email}</td>
-                  <td>{msg.message}</td>
-                  <td>{new Date(msg.created_at).toLocaleDateString()}</td>
+              {messages.map(message => (
+                <tr key={message.id}>
+                  <td>{message.name}</td>
+                  <td>{message.email}</td>
+                  <td>{message.message}</td>
+                  <td>
+                    {message.admin_reply ? (
+                      <div className={styles.replyText}>{message.admin_reply}</div>
+                    ) : (
+                      <div className={styles.noReply}>No reply yet</div>
+                    )}
+                  </td>
+                  <td>{new Date(message.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <button 
+                      onClick={() => handleReplyClick(message)}
+                      className={styles.replyButton}
+                    >
+                      {message.admin_reply ? 'Edit Reply' : 'Reply'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          {/* Reply Modal */}
+          {selectedMessage && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.modal}>
+                <div className={styles.modalHeader}>
+                  <h3>Reply to Message</h3>
+                  <button onClick={() => setSelectedMessage(null)} className={styles.closeButton}>×</button>
+                </div>
+                <div className={styles.modalContent}>
+                  <div className={styles.messageDetails}>
+                    <p><strong>From:</strong> {selectedMessage.name} ({selectedMessage.email})</p>
+                    <p><strong>Message:</strong> {selectedMessage.message}</p>
+                  </div>
+                  <form onSubmit={handleReplySubmit} className={styles.replyForm}>
+                    <div className={styles.formGroup}>
+                      <label>Your Reply:</label>
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        required
+                        placeholder="Type your reply here..."
+                      />
+                    </div>
+                    <div className={styles.formActions}>
+                      <button type="submit" className={styles.saveButton}>
+                        {selectedMessage.admin_reply ? 'Update Reply' : 'Send Reply'}
+                      </button>
+                      <button 
+                        type="button" 
+                        className={styles.cancelButton}
+                        onClick={() => setSelectedMessage(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {activeTab === 'events' && (
-        <div className={styles.eventPage}>
-          <div className={styles.eventContent}>
-            <h1>Manage Events</h1>
-            <div className={styles.eventGrid}>
-              {events.map((event) => (
-                <div key={event.id} className={styles.eventCard}>
-                  <div className={styles.eventImage}>
-                    <img src={event.image} alt={event.title} />
-                    <div className={styles.eventIcon}>{event.icon}</div>
-                  </div>
-                  <div className={styles.eventInfo}>
-                    <h2>{event.title}</h2>
-                    <p>{event.description}</p>
-                    <div className={styles.eventFeatures}>
-                      {event.features.map((feature, index) => (
-                        <span key={index} className={styles.featureTag}>{feature}</span>
-                      ))}
-                    </div>
-                    <div className={styles.adminActions}>
-                      <button 
-                        onClick={() => handleViewParticipants(event.id)}
-                        className={styles.viewButton}
-                      >
-                        View Participants
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteEvent(event.id)}
-                        className={styles.deleteButton}
-                      >
-                        Delete Event
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Participants Modal */}
-      {showParticipantsModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <div className={styles.modalHeader}>
-              <h2>Participants for {selectedEvent?.title}</h2>
-              <button onClick={closeParticipantsModal} className={styles.closeButton}>×</button>
-            </div>
-            <div className={styles.modalContent}>
-              {loadingParticipants ? (
-                <div className={styles.loadingSpinner}><div className={styles.spinner}></div></div>
-              ) : eventParticipants.length === 0 ? (
-                <p className={styles.noParticipants}>No participants yet</p>
-              ) : (
-                <div className={styles.participantsList}>
-                  {eventParticipants.map((participant) => (
-                    <div key={participant.id} className={styles.participantCard}>
-                      <img
-                        src={participant.profile_picture || DEFAULT_PROFILE_IMAGE}
-                        alt={participant.name}
-                        className={styles.participantAvatar}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = DEFAULT_PROFILE_IMAGE;
-                        }}
-                      />
-                      <div className={styles.participantInfo}>
-                        <h3>{participant.name}</h3>
-                        <p>{participant.email}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <AdminEvents />
       )}
     </div>
   );

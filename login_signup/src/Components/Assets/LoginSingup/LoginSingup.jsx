@@ -1,16 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import "./LoginSingup.css";
 import axios from 'axios';
 import person from '../../Assets/person.png';
 import email from '../../Assets/email.png';
 import password from '../../Assets/password.png';
-import { UserContext } from '../../UserContext';
+import { useUser } from '../../UserContext';
 
 const AuthForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useContext(UserContext);
+  const { login } = useUser();
 
   const isSignup = location.pathname === "/signup";
   const action = isSignup ? "Sign Up" : "Login";
@@ -89,25 +89,35 @@ const AuthForm = () => {
         }, 2000);
       } else {
         try {
-          if (!response.data.user) {
-            throw new Error("User data missing in login response");
-          }
-          // Store the token
+          // Store the token first
           if (response.data.token) {
             localStorage.setItem('token', response.data.token);
-          }
-          setUser(response.data.user);
-          if (response.data.user.is_admin) {
-            navigate("/admin");
           } else {
-            navigate("/central");
+            console.error("No token received in response");
+            throw new Error("No token received");
+          }
+
+          // Then set the user data
+          if (response.data.user) {
+            login(response.data.user);
+            // Navigate based on user role
+            if (response.data.user.is_admin) {
+              navigate("/admin");
+            } else {
+              navigate("/central");
+            }
+          } else {
+            console.error("No user data in response:", response.data);
+            throw new Error("No user data received");
           }
         } catch (e) {
-          console.error("Error after login success:", e.stack || e);
-          setError("An error occurred after login.");
+          console.error("Error processing login response:", e);
+          console.error("Response data:", response.data);
+          setError("An error occurred while processing login. Please try again.");
         }
       }
     } catch (error) {
+      console.error("Login request failed:", error);
       setError(error.response?.data?.error || "Something went wrong!");
     } finally {
       setLoading(false);
