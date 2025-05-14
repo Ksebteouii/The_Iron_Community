@@ -11,11 +11,10 @@ from functools import wraps
 
 auth_bp = Blueprint('auth', __name__)
 
-# In-memory token store for demo purposes (replace with persistent store in production)
 reset_tokens = {}
-tokens = {}  # Store for user tokens
+tokens = {}  
 
-# Store verification codes temporarily (in production, use Redis or similar)
+
 verification_codes = {}
 
 def token_required(f):
@@ -41,13 +40,7 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
-def generate_verification_code():
-    """Generate a 6-digit verification code"""
-    return ''.join(random.choices(string.digits, k=6))
 
-def generate_reset_token():
-    """Generate a secure reset token"""
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=32))
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
