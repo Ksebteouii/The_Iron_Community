@@ -12,12 +12,12 @@ const UserMessages = () => {
   const [loading, setLoading] = useState(true);  // Loading state for API calls
   const [error, setError] = useState(null);      // Error state for error handling
 
-  // Fetch messages when component mounts
+  
   useEffect(() => {
     fetchMessages();
   }, []);
 
-  // Function to fetch user's messages from the backend
+  
   const fetchMessages = async () => {
     try {
       // Get authentication token from localStorage

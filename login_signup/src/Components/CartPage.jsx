@@ -37,19 +37,15 @@ const CartPage = () => {
 
     setIsCheckingOut(true);
     try {
-      // Here you would typically:
-      // 1. Create an order in your backend
-      // 2. Process payment
-      // 3. Clear the cart
-      // 4. Redirect to success page
+      
 
-      // For now, we'll simulate a successful checkout
+     
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
       
-      // Clear the cart (you'll need to implement this in your CartContext)
+
       cart.forEach(item => removeFromCart(item.id));
       
-      // Show success message
+      
       alert('Order placed successfully! Thank you for your purchase.');
       
       // Redirect to store page

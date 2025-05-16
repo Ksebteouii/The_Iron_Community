@@ -5,7 +5,7 @@ from functools import wraps
 
 cart_bp = Blueprint('cart', __name__)
 
-# Dummy user authentication decorator for demo
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
