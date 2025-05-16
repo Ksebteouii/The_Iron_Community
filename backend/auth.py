@@ -117,65 +117,6 @@ def login():
         print("Login Error:", e)
         return jsonify({'error': 'Something went wrong!'}), 500
 
-@auth_bp.route('/forgot-password', methods=['POST'])
-@cross_origin()
-def forgot_password():
-    data = request.get_json()
-    email = data.get('email')
-    
-    if not email:
-        return jsonify({'error': 'Email is required'}), 400
-    
-    user = User.query.filter_by(email=email).first()
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-    
-    profile = Profile.query.filter_by(email=email).first()
-    if not profile or not profile.phone_number:
-        return jsonify({'error': 'No phone number found for this account'}), 400
-    
-    # Generate verification code
-    verification_code = generate_verification_code()
-    verification_codes[email] = {
-        'code': verification_code,
-        'expires': datetime.datetime.utcnow() + datetime.timedelta(minutes=10),
-        'token': generate_reset_token()
-    }
-    
-    # In a production environment, you would send this code via SMS
-    # For development, we'll return it in the response
-    return jsonify({
-        'message': 'Verification code sent to your phone number',
-        'verification_code': verification_code,  # Remove this in production
-        'phone_number': profile.phone_number[-4:]  # Show only last 4 digits
-    }), 200
-
-@auth_bp.route('/verify-reset-code', methods=['POST'])
-@cross_origin()
-def verify_reset_code():
-    data = request.get_json()
-    email = data.get('email')
-    code = data.get('code')
-    
-    if not email or not code:
-        return jsonify({'error': 'Email and verification code are required'}), 400
-    
-    stored_data = verification_codes.get(email)
-    if not stored_data:
-        return jsonify({'error': 'No verification code found for this email'}), 400
-    
-    if datetime.datetime.utcnow() > stored_data['expires']:
-        del verification_codes[email]
-        return jsonify({'error': 'Verification code has expired'}), 400
-    
-    if code != stored_data['code']:
-        return jsonify({'error': 'Invalid verification code'}), 400
-    
-    # Return the reset token for the next step
-    return jsonify({
-        'message': 'Code verified successfully',
-        'reset_token': stored_data['token']
-    }), 200
 
 @auth_bp.route('/reset-password', methods=['POST'])
 @cross_origin()

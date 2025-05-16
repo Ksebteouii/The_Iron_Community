@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import styles from './AdminDashboard.module.css';
-import AdminEvents from './Admin/AdminEvents';
+import AdminEvents from './admin/AdminEvents.js';
 
 const DEFAULT_PROFILE_IMAGE = 'https://placehold.co/50x50?text=User';
 const DEFAULT_ITEM_IMAGE = 'https://placehold.co/100x100?text=Item';
 
 const AdminDashboard = () => {
+  // General state
   const [users, setUsers] = useState([]);
   const [carts, setCarts] = useState([]);
-  const [messages, setMessages] = useState([]);
+  
+  // Messaging-related state
+  const [messages, setMessages] = useState([]);  // Stores all user messages from the database
+  const [selectedMessage, setSelectedMessage] = useState(null);  // Tracks which message is currently selected for reply
+  const [replyText, setReplyText] = useState('');  // Stores the admin's reply text input
+  
+  // UI state
   const [activeTab, setActiveTab] = useState('users');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedMessage, setSelectedMessage] = useState(null);
-  const [replyText, setReplyText] = useState('');
 
   const getAuthHeader = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -84,25 +89,30 @@ const AdminDashboard = () => {
     }
   };
 
+  // Function to handle clicking the reply button on a message
   const handleReplyClick = (message) => {
-    setSelectedMessage(message);
-    setReplyText(message.admin_reply || '');
+    setSelectedMessage(message);  // Set the clicked message as the selected message
+    setReplyText(message.admin_reply || '');  // Pre-fill reply text if there's an existing reply
   };
 
+  // Function to handle submitting a reply to a message
   const handleReplySubmit = async (e) => {
     e.preventDefault();
-    if (!selectedMessage) return;
+    if (!selectedMessage) return;  // Guard clause: ensure a message is selected
 
     try {
       const headers = getAuthHeader();
-      const response = await axios.post(`http://localhost:5000/api/admin/contact-messages/${selectedMessage.id}/reply`, {
-        reply: replyText
-      }, { headers });
+      // Send POST request to save the admin's reply
+      const response = await axios.post(
+        `http://localhost:5000/api/admin/contact-messages/${selectedMessage.id}/reply`,
+        { reply: replyText },
+        { headers }
+      );
       
       if (response.data.message === 'Reply saved successfully') {
-        fetchData();
-        setSelectedMessage(null);
-        setReplyText('');
+        fetchData();  // Refresh all data to show updated message
+        setSelectedMessage(null);  // Clear selected message
+        setReplyText('');  // Clear reply input
       } else {
         throw new Error(response.data.error || 'Failed to send reply');
       }
@@ -270,6 +280,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
+      {/* Messages Tab - Shows all user messages and allows admin to reply */}
       {activeTab === 'messages' && (
         <div className={styles.tableContainer}>
           <table className={styles.table}>
@@ -290,6 +301,7 @@ const AdminDashboard = () => {
                   <td>{message.email}</td>
                   <td>{message.message}</td>
                   <td>
+                    {/* Show different UI based on whether message has been replied to */}
                     {message.admin_reply ? (
                       <div className={styles.replyText}>Done</div>
                     ) : (
@@ -298,6 +310,7 @@ const AdminDashboard = () => {
                   </td>
                   <td>{new Date(message.created_at).toLocaleDateString()}</td>
                   <td>
+                    {/* Reply button changes text based on whether message has been replied to */}
                     <button 
                       onClick={() => handleReplyClick(message)}
                       className={styles.replyButton}

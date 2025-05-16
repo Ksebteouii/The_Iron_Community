@@ -17,7 +17,7 @@ const AuthForm = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    email: "", 
     password: "",
   });
   const [loading, setLoading] = useState(false);

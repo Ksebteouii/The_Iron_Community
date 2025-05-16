@@ -12,21 +12,21 @@ def migrate():
             Event(
                 title="Camping Adventure",
                 description="Join us for an unforgettable camping experience in the wilderness. Learn survival skills, enjoy nature, and make new friends.",
-                date=datetime(2024, 5, 15, 9, 0),
+                date=datetime(2025, 5, 15, 9, 0),
                 location="Mount Washington Trail",
                 max_participants=20
             ),
             Event(
                 title="Hiking Expedition",
                 description="Challenge yourself with our guided hiking expedition. Perfect for both beginners and experienced hikers.",
-                date=datetime(2024, 5, 20, 10, 0),
+                date=datetime(2025, 5, 20, 10, 0),
                 location="Sunset Beach",
                 max_participants=50
             ),
             Event(
                 title="Iron Community Challenge",
                 description="Test your limits in our community fitness challenge. A perfect blend of strength, endurance, and teamwork.",
-                date=datetime(2024, 6, 1, 14, 0),
+                date=datetime(2025, 6, 1, 14, 0),
                 location="Green Valley Forest Center",
                 max_participants=30
             )
