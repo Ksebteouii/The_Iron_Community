@@ -4,14 +4,13 @@ import { useUser } from '../Components/UserContext';
 import styles from './NavBar.module.css';
 
 const NavBar = () => {
-  const { user, logout } = useUser();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isStorePage = location.pathname === '/store';
+  const { user, logout } = useUser(); // Get the user and logout function from the context 
+  const navigate = useNavigate(); 
+  const isStorePage = location.pathname === '/store'; // Check if the current path is the store page 
 
-  const handleLogout = () => {
+  const handleLogout = () => { 
     logout();
-    navigate('/login');
+    navigate('/login'); 
   };
 
   return (

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 export const UserContext = createContext();
 
 export const useUser = () => {
-  const context = useContext(UserContext);
+  const context = useContext(UserContext); // Get the context  
   if (!context) {
     throw new Error('useUser must be used within a UserProvider');
   }
@@ -11,15 +11,17 @@ export const useUser = () => {
 };
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Initially no user is logged in 
+
 
   const login = (userData) => {
-    setUser(userData);
+    setUser(userData); // Set the user data to the state 
+
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('token');
+    setUser(null); // Set the user to null 
+    localStorage.removeItem('token'); // Remove the token from the local storage 
   };
 
   const value = {

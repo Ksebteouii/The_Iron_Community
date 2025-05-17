@@ -11,11 +11,10 @@ from functools import wraps
 
 auth_bp = Blueprint('auth', __name__)
 
-reset_tokens = {}
-tokens = {}  
+
+tokens = {} # Dictionary to store tokens and their user IDs  
 
 
-verification_codes = {}
 
 def token_required(f):
     @wraps(f)
@@ -141,16 +140,7 @@ def reset_password():
 
     return jsonify({'message': 'Password reset successful'}), 200
 
-@auth_bp.route('/auth/verify-token', methods=['GET'])
-@token_required
-def verify_token(current_user):
-    return jsonify({
-        'user': {
-            'id': current_user.id,
-            'email': current_user.email,
-            'is_admin': current_user.is_administrator()
-        }
-    }), 200
+
 
 @auth_bp.route('/auth/verify', methods=['GET'])
 @token_required

@@ -179,7 +179,7 @@ const CartPage = () => {
               </button>
               
               <p className="shipping-note">
-                Free shipping on orders over $200
+                
               </p>
             </div>
           </div>

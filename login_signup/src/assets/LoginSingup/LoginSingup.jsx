@@ -7,22 +7,22 @@ import email from '../../Assets/email.png';
 import password from '../../Assets/password.png';
 import { UserContext } from '../../UserContext';
 
-const AuthForm = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setUser } = useContext(UserContext);
+const AuthForm = () => { 
+  const navigate = useNavigate(); 
+  const location = useLocation(); 
+  const { setUser } = useContext(UserContext); 
 
-  const isSignup = location.pathname === "/signup";
-  const action = isSignup ? "Sign Up" : "Login";
+  const isSignup = location.pathname === "/signup"; // Check if the current path is the signup page 
+  const action = isSignup ? "Sign Up" : "Login"; // Set the action to sign up or login 
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({  
     name: "",
     email: "", 
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null); 
+  const [success, setSuccess] = useState(null); 
 
   const validateEmail = (email) => {
     const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -69,10 +69,10 @@ const AuthForm = () => {
       }
     }
 
-    const endpoint = isSignup ? "/signup" : "/login";
-    const payload = isSignup
+    const endpoint = isSignup ? "/signup" : "/login"; // Set the endpoint to signup or login  
+    const payload = isSignup 
       ? formData
-      : { email: formData.email, password: formData.password };
+      : { email: formData.email, password: formData.password }; // Set the payload to the form data  
 
     try {
       const response = await axios.post(
@@ -92,8 +92,9 @@ const AuthForm = () => {
           if (!response.data.user) {
             throw new Error("User data missing in login response");
           }
-          setUser(response.data.user);
-          if (response.data.user.is_admin) {
+          setUser(response.data.user); // Store the user data in the context  
+          localStorage.setItem('token', response.data.token); // Store the token in the local storage   
+          if (response.data.user.is_admin) { 
             navigate("/admin");
           } else {
             navigate("/central");
