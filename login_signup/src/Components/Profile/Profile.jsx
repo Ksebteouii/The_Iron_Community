@@ -76,21 +76,24 @@ const Profile = () => {
   };
 
   const handleFileChange = (e) => {
+    // get the file user selected 
     const file = e.target.files[0];
-    if (!file) return;
-
+    if (!file) return; // if no file selected do nothing 
+ // check if its an image 
     if (!file.type.startsWith('image/')) {
       setError('Invalid file type. Please select an image file.');
       return;
     }
+     // check if its too big  
 
     if (file.size > MAX_FILE_SIZE) {
       setError('File size exceeds 2MB limit. Please choose a smaller file.');
       return;
     }
-
+    // if its a valid image, read it as a data url  (base6)
     const reader = new FileReader();
     reader.onloadend = () => {
+      // update the form data with the new profile picture  
       setFormData(prev => ({
         ...prev,
         profilePicture: reader.result

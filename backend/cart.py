@@ -37,9 +37,9 @@ def create_or_update_cart():
         return jsonify({'error': 'Items field is required'}), 400
     cart = Cart.query.filter_by(user_id=g.user.id).first()
     if cart:
-        cart.items = items
+        cart.items = items # update the cart items  
     else:
-        cart = Cart(user_id=g.user.id, items=items)
+        cart = Cart(user_id=g.user.id, items=items) # create a new cart if it doesn't exist   
         db.session.add(cart)
     db.session.commit()
     return jsonify({'message': 'Cart saved successfully'}), 200

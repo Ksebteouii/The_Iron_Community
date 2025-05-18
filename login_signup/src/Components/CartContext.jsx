@@ -13,11 +13,11 @@ export const CartProvider = ({ children }) => {
     const fetchCart = async () => {
       if (user && user.email) {
         try {
-          const response = await axios.get('http://localhost:5000/cart', {
-            headers: { 'X-User-Email': user.email }
+          const response = await axios.get('http://localhost:5000/cart', { 
+            headers: { 'X-User-Email': user.email } // send the user email to the backend    
           });
-          const items = JSON.parse(response.data.items || '[]');
-          setCart(items);
+          const items = JSON.parse(response.data.items || '[]'); 
+          setCart(items); // set the cart to the items  
         } catch (error) {
           console.error('Failed to fetch cart from backend:', error);
         }
@@ -32,9 +32,9 @@ export const CartProvider = ({ children }) => {
       if (user && user.email) {
         try {
           await axios.post('http://localhost:5000/cart', {
-            items: JSON.stringify(cart)
+            items: JSON.stringify(cart) // convert the cart to a string  
           }, {
-            headers: { 'X-User-Email': user.email }
+            headers: { 'X-User-Email': user.email } // send the user email to the backend   
           });
         } catch (error) {
           console.error('Failed to save cart to backend:', error);
@@ -42,12 +42,12 @@ export const CartProvider = ({ children }) => {
       }
     };
     saveCart();
-  }, [cart, user]);
+  }, [cart, user]); // save the cart to the backend whenever the cart changes and the user is logged in   
 
   // Add item to cart
   const addToCart = (product) => {
     setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
+      const existingItem = prevCart.find(item => item.id === product.id); // Check if the item already exists in the cart  
 
       if (existingItem) {
         return prevCart.map(item =>
@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
         );
       }
 
-      return [...prevCart, { ...product, quantity: 1 }];
+      return [...prevCart, { ...product, quantity: 1 }]; // Add the item to the cart  
     });
   };
 
@@ -82,7 +82,7 @@ export const CartProvider = ({ children }) => {
   };
 
   // Calculate total items count
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0); // calculate the total number of items in the cart   
 
   return (
     <CartContext.Provider value={{

@@ -21,11 +21,11 @@ const AdminEvents = () => {
   const [participants, setParticipants] = useState([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [participantsError, setParticipantsError] = useState(null);
-
+ // fetch events when the component mounts  
   useEffect(() => {
     fetchEvents();
   }, []);
-
+ // fetch events from the server  
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -40,7 +40,7 @@ const AdminEvents = () => {
       setLoading(false);
     }
   };
-
+ // handle edit event  
   const handleEdit = (event) => {
     setEditingEvent(event);
     setFormData({
@@ -53,7 +53,7 @@ const AdminEvents = () => {
       status: event.status
     });
   };
-
+ // handle input change   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -61,7 +61,8 @@ const AdminEvents = () => {
       [name]: value
     }));
   };
-
+   
+  // handle submit    
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

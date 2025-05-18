@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const [replyText, setReplyText] = useState('');  // Stores the admin's reply text input
   
   // UI state
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState('users'); // which tab is active 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
