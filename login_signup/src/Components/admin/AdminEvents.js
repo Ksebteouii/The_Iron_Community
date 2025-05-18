@@ -21,11 +21,14 @@ const AdminEvents = () => {
   const [participants, setParticipants] = useState([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
   const [participantsError, setParticipantsError] = useState(null);
- // fetch events when the component mounts  
+  const [isCreating, setIsCreating] = useState(false);
+
+  // fetch events when the component mounts  
   useEffect(() => {
     fetchEvents();
   }, []);
- // fetch events from the server  
+
+  // fetch events from the server  
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -40,7 +43,8 @@ const AdminEvents = () => {
       setLoading(false);
     }
   };
- // handle edit event  
+
+  // handle edit event  
   const handleEdit = (event) => {
     setEditingEvent(event);
     setFormData({
@@ -53,7 +57,8 @@ const AdminEvents = () => {
       status: event.status
     });
   };
- // handle input change   
+
+  // handle input change   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -86,6 +91,32 @@ const AdminEvents = () => {
     } catch (error) {
       console.error('Error updating event:', error);
       setError('Failed to update event');
+    }
+  };
+
+  const handleCreateEvent = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/admin/events', formData, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      // Refresh events list
+      fetchEvents();
+      setIsCreating(false);
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+        location: '',
+        max_participants: '',
+        status: 'active'
+      });
+    } catch (error) {
+      console.error('Error creating event:', error);
+      setError('Failed to create event');
     }
   };
 
@@ -143,6 +174,13 @@ const AdminEvents = () => {
   return (
     <div className={styles.adminEvents}>
       <h2>Manage Events</h2>
+      
+      <button 
+        className={styles.createButton}
+        onClick={() => setIsCreating(true)}
+      >
+        Create New Event
+      </button>
       
       {editingEvent && (
         <div className={styles.editForm}>
